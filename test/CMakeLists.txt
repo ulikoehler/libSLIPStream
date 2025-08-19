@@ -15,7 +15,7 @@ find_package(GTest REQUIRED)
 add_executable(test_slipbuffer
     test_slipbuffer.cpp
     ${PROJECT_ROOT}/src/SLIPBuffer.cpp
-    ${PROJECT_ROOT}/src/SLIPStream.cpp
+    ${PROJECT_ROOT}/src/SLIPStreamDecoder.cpp
 )
 target_include_directories(test_slipbuffer PRIVATE ${PROJECT_ROOT}/include)
 target_link_libraries(test_slipbuffer PRIVATE GTest::gtest_main)

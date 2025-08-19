@@ -1,5 +1,5 @@
 #include "SLIPStream/SLIP.hpp"
-#include "SLIPStream/SLIPStream.hpp"
+#include "SLIPStream/SLIPStreamDecoder.hpp"
 
 
 SLIPStreamDecoder::SLIPStreamDecoder(uint8_t* rxbuf, size_t rxbufSize, std::function<void(uint8_t*, size_t)> messageCallback, std::function<void(SLIPLogType, const char*)> logCallback)

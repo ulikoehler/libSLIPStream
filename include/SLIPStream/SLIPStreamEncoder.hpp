@@ -1,5 +1,5 @@
 /**
- * @file SLIPStream.hpp
+ * @file SLIPStreamEncoder.hpp
  * @author Uli Köhler <github@techoverflow.net>
  * @version 1.0
  * @date 2025-08-19
@@ -12,7 +12,6 @@
 #include <functional>
 #include <vector>
 #include "SLIPStream/SLIP.hpp"
-
 
 /**
  * Non-blocking write status for the encoder's single-byte output callback

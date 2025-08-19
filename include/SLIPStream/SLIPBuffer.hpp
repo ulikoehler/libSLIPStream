@@ -1,5 +1,5 @@
 /**
- * @file SLIPStream.hpp
+ * @file SLIPBuffer.hpp
  * @author Uli Köhler <github@techoverflow.net>
  * @version 1.0
  * @date 2025-08-19
