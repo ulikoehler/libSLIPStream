@@ -27,7 +27,7 @@ struct BackpressuredSink {
 
 TEST(SLIPEncoder, SimpleEncodeImmediate) {
     BackpressuredSink sink;
-    SLIPStreamEncoder enc(sink, 64, 16);
+    SLIPStreamEncoder enc([&sink](uint8_t b){ return sink(b); }, 64, 16);
 
     const uint8_t in[] = {0x01, 0x02, 0x03};
     auto [st, consumed] = enc.pushPacket(in, sizeof(in));
@@ -43,7 +43,7 @@ TEST(SLIPEncoder, SimpleEncodeImmediate) {
 
 TEST(SLIPEncoder, EncodeWithEscapes) {
     BackpressuredSink sink;
-    SLIPStreamEncoder enc(sink, 64, 16);
+    SLIPStreamEncoder enc([&sink](uint8_t b){ return sink(b); }, 64, 16);
 
     const uint8_t in[] = {SLIP_END, SLIP_ESC, 0x55};
     auto [st, consumed] = enc.pushPacket(in, sizeof(in));
@@ -59,7 +59,7 @@ TEST(SLIPEncoder, RetryLaterDuringEncode) {
     BackpressuredSink sink;
     // Simulate sink accepting only 2 bytes then blocking
     sink.acceptThenBlock = 2;
-    SLIPStreamEncoder enc(sink, 16, 4);
+    SLIPStreamEncoder enc([&sink](uint8_t b){ return sink(b); }, 16, 4);
 
     const uint8_t in[] = {0x01, SLIP_END, 0x02};
     // First push: will encode until sink blocks
@@ -89,7 +89,7 @@ TEST(SLIPEncoder, RetryLaterDuringEncode) {
 TEST(SLIPEncoder, QueueCapacityAndFragmentation) {
     BackpressuredSink sink;
     // Small tx buffer to force fragmentation
-    SLIPStreamEncoder enc(sink, 8, 3);
+    SLIPStreamEncoder enc([&sink](uint8_t b){ return sink(b); }, 8, 3);
 
     // Prepare a payload that will expand due to escapes
     const uint8_t in[] = {SLIP_END, SLIP_ESC, SLIP_END, SLIP_ESC}; // encodes to 8 bytes + END
