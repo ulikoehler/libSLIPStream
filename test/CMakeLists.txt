@@ -9,18 +9,24 @@ set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 include_directories(${PROJECT_ROOT}/include)
 
+# Use system-installed GoogleTest (expect it to be available on the host)
+find_package(GTest REQUIRED)
+
 add_executable(test_slipbuffer
     test_slipbuffer.cpp
     ${PROJECT_ROOT}/src/SLIPBuffer.cpp
     ${PROJECT_ROOT}/src/SLIPStream.cpp
 )
-
-# Ensure the target can see the public headers
 target_include_directories(test_slipbuffer PRIVATE ${PROJECT_ROOT}/include)
-
-# Use system-installed GoogleTest (expect it to be available on the host)
-find_package(GTest REQUIRED)
 target_link_libraries(test_slipbuffer PRIVATE GTest::gtest_main)
-
-enable_testing()
 add_test(NAME SLIPBufferTests COMMAND test_slipbuffer)
+
+add_executable(test_slipencoder
+    test_slipencoder.cpp
+    ${PROJECT_ROOT}/src/SLIPBuffer.cpp
+    ${PROJECT_ROOT}/src/SLIPStreamDecoder.cpp
+    ${PROJECT_ROOT}/src/SLIPStreamEncoder.cpp
+)
+target_include_directories(test_slipencoder PRIVATE ${PROJECT_ROOT}/include)
+target_link_libraries(test_slipencoder PRIVATE GTest::gtest_main)
+add_test(NAME SLIPEncoderTests COMMAND test_slipencoder)

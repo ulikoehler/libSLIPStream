@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <functional>
+#include <vector>
 #include "SLIPStream/SLIP.hpp"
 
 // Return value of slip_encode_packet if the output buffer is not large enough
