@@ -1,4 +1,4 @@
-#include "SLIPStream/SLIPStreamEncoder.hpp"
+#include "SLIPStream/Encoder.hpp"
 
 namespace SLIPStream {
 

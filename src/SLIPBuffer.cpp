@@ -1,5 +1,5 @@
 #include "SLIPStream/SLIP.hpp"
-#include "SLIPStream/SLIPBuffer.hpp"
+#include "SLIPStream/Buffer.hpp"
 
 namespace SLIPStream {
 

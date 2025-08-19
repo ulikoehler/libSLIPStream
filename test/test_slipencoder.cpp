@@ -5,7 +5,7 @@
 #include <vector>
 #include <deque>
 #include <functional>
-#include "SLIPStream/SLIPStreamEncoder.hpp"
+#include "SLIPStream/Encoder.hpp"
 #include "SLIPStream/SLIP.hpp"
 
 // Helper: capture output into a vector, with optional backpressure simulation

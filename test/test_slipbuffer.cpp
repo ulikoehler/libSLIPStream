@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <vector>
-#include "SLIPStream/SLIPBuffer.hpp"
+#include "SLIPStream/Buffer.hpp"
 
 using namespace SLIPStream;
 

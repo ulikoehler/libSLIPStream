@@ -2,18 +2,18 @@
 
 SLIP encoder & decoder focused on embedded systems, in C++.
 
-This small, header-first library provides buffer-based helpers to encode and decode data using the SLIP (Serial Line Internet Protocol) framing. It is designed to be lightweight and safe for constrained environments: callers provide input/output buffers and the library returns explicit error codes when buffers are too small or input is malformed.
+This small, unopinionated library provides buffer-based helpers to encode and decode data using the SLIP (Serial Line Internet Protocol) framing. It is designed to be lightweight and safe for constrained environments: callers provide input/output buffers and the library returns explicit error codes when buffers are too small or input is malformed.
 
 ## Key symbols (namespaced)
 
-- `#include "SLIPStream/SLIPBuffer.hpp"` — high-level buffer helpers
+- `#include "SLIPStream/Buffer.hpp"` — high-level buffer helpers
 - `SLIPStream::encoded_length(const uint8_t* in, size_t inlen)` — compute encoded size (including final END)
 - `SLIPStream::encode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen)` — encode into `out`
 - `SLIPStream::decoded_length(const uint8_t* in, size_t inlen)` — compute decoded size up to first END
 - `SLIPStream::decode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen)` — decode into `out`
 - `SLIPStream::ENCODE_ERROR` / `SLIPStream::DECODE_ERROR` — functions return this (`SIZE_MAX`) on errors
 
-See the header `include/SLIPStream/SLIPBuffer.hpp` for documentation and function contracts.
+See the header `include/SLIPStream/Buffer.hpp` for documentation and function contracts.
 
 ## Basic usage (encoding)
 
@@ -26,7 +26,7 @@ Typical pattern for encoding safely:
 Example:
 
 ```cpp
-#include "SLIPStream/SLIPBuffer.hpp"
+#include "SLIPStream/Buffer.hpp"
 #include <vector>
 #include <cstdio>
 
@@ -61,7 +61,7 @@ Typical pattern for decoding safely:
 Example:
 
 ```cpp
-#include "SLIPStream/SLIPBuffer.hpp"
+#include "SLIPStream/Buffer.hpp"
 #include <vector>
 #include <cstdio>
 
