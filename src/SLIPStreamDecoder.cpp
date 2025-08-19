@@ -1,13 +1,14 @@
 #include "SLIPStream/SLIP.hpp"
 #include "SLIPStream/SLIPStreamDecoder.hpp"
 
+namespace SLIPStream {
 
-SLIPStreamDecoder::SLIPStreamDecoder(uint8_t* rxbuf, size_t rxbufSize, std::function<void(uint8_t*, size_t)> messageCallback, std::function<void(SLIPLogType, const char*)> logCallback)
+Decoder::Decoder(uint8_t* rxbuf, size_t rxbufSize, std::function<void(uint8_t*, size_t)> messageCallback, std::function<void(LogType, const char*)> logCallback)
     : lastCharIsEsc(false), rxbuf(rxbuf), rxbufPos(0), rxbufSize(rxbufSize), messageCallback(messageCallback), logCallback(logCallback) {
 }
 
 
-void SLIPStreamDecoder::consume(const uint8_t* data, size_t size) {
+void Decoder::consume(const uint8_t* data, size_t size) {
     for (size_t i = 0; i < size; i++)
     {
         consume(data[i]);
@@ -15,19 +16,19 @@ void SLIPStreamDecoder::consume(const uint8_t* data, size_t size) {
     
 }
 
-void SLIPStreamDecoder::consume(uint8_t c) {
+void Decoder::consume(uint8_t c) {
     if(rxbufSize - rxbufPos < 2) {
-		logCallback(SLIPLogType::RXBufferOverflow, "RX buffer overflow");
+        logCallback(LogType::RXBufferOverflow, "RX buffer overflow");
 		reset();
     }
     // Adapted from https://techoverflow.net/2022/07/19/a-python-slip-decoder-using-serial_asyncio/
     if(lastCharIsEsc) {
         // This character must be either
         // SLIP_ESCEND or SLIP_ESCESC
-        if(c == SLIP_ESCEND) { // Literal END character
-            rxbuf[rxbufPos++] = SLIP_END;
-        } else if(c == SLIP_ESCESC) { // Literal ESC character
-            rxbuf[rxbufPos++] = SLIP_ESC;
+        if(c == ESCEND) { // Literal END character
+            rxbuf[rxbufPos++] = END;
+        } else if(c == ESCESC) { // Literal ESC character
+            rxbuf[rxbufPos++] = ESC;
         } else {
             //print(red("Encountered invalid SLIP escape sequence. Ignoring..."))
             // Ignore bad part of message
@@ -35,12 +36,12 @@ void SLIPStreamDecoder::consume(uint8_t c) {
         }
         lastCharIsEsc = false; // Reset state
     } else { // last char was NOT ESC
-        if(c == SLIP_END) { // END of message
+        if(c == END) { // END of message
             // Emit message
             messageCallback(rxbuf, rxbufPos);
             // Remove current message from buffer
             reset();
-        } else if(c == SLIP_ESC) {
+        } else if(c == ESC) {
             // Handle escaped character next 
             lastCharIsEsc = true;
         } else { // Any other character
@@ -49,7 +50,9 @@ void SLIPStreamDecoder::consume(uint8_t c) {
     }
 }
 
-void SLIPStreamDecoder::reset() {
+void Decoder::reset() {
     rxbufPos = 0;
 	lastCharIsEsc = false;
 }
+
+} // namespace SLIPStream

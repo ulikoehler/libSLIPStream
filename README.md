@@ -4,14 +4,14 @@ SLIP encoder & decoder focused on embedded systems, in C++.
 
 This small, header-first library provides buffer-based helpers to encode and decode data using the SLIP (Serial Line Internet Protocol) framing. It is designed to be lightweight and safe for constrained environments: callers provide input/output buffers and the library returns explicit error codes when buffers are too small or input is malformed.
 
-## Key symbols
+## Key symbols (namespaced)
 
 - `#include "SLIPStream/SLIPBuffer.hpp"` — high-level buffer helpers
-- `slip_encoded_length(const uint8_t* in, size_t inlen)` — compute encoded size (including final END)
-- `slip_encode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen)` — encode into `out`
-- `slip_decoded_length(const uint8_t* in, size_t inlen)` — compute decoded size up to first END
-- `slip_decode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen)` — decode into `out`
-- `SLIP_ENCODE_ERROR` / `SLIP_DECODE_ERROR` — functions return this (`SIZE_MAX`) on errors
+- `SLIPStream::encoded_length(const uint8_t* in, size_t inlen)` — compute encoded size (including final END)
+- `SLIPStream::encode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen)` — encode into `out`
+- `SLIPStream::decoded_length(const uint8_t* in, size_t inlen)` — compute decoded size up to first END
+- `SLIPStream::decode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen)` — decode into `out`
+- `SLIPStream::ENCODE_ERROR` / `SLIPStream::DECODE_ERROR` — functions return this (`SIZE_MAX`) on errors
 
 See the header `include/SLIPStream/SLIPBuffer.hpp` for documentation and function contracts.
 
@@ -19,9 +19,9 @@ See the header `include/SLIPStream/SLIPBuffer.hpp` for documentation and functio
 
 Typical pattern for encoding safely:
 
-1. Call `slip_encoded_length()` to determine how many bytes the encoded packet will occupy.
+1. Call `SLIPStream::encoded_length()` to determine how many bytes the encoded packet will occupy.
 2. Allocate an output buffer of at least that size (stack, static, or heap as appropriate).
-3. Call `slip_encode_packet()` and check the return value.
+3. Call `SLIPStream::encode_packet()` and check the return value.
 
 Example:
 
@@ -32,11 +32,11 @@ Example:
 
 void encode_example() {
 	const uint8_t payload[] = { 0x01, 0xC0, 0x02 }; // contains a SLIP END (0xC0)
-	size_t needed = slip_encoded_length(payload, sizeof(payload));
+	size_t needed = SLIPStream::encoded_length(payload, sizeof(payload));
 	std::vector<uint8_t> out(needed);
 
-	size_t written = slip_encode_packet(payload, sizeof(payload), out.data(), out.size());
-	if (written == SLIP_ENCODE_ERROR) {
+	size_t written = SLIPStream::encode_packet(payload, sizeof(payload), out.data(), out.size());
+	if (written == SLIPStream::ENCODE_ERROR) {
 		// handle insufficient buffer or other internal error
 		std::puts("encode failed: output buffer too small");
 		return;
@@ -47,7 +47,7 @@ void encode_example() {
 ```
 
 Notes:
-- Always use the length returned by `slip_encoded_length()` when allocating the destination buffer.
+- Always use the length returned by `SLIPStream::encoded_length()` when allocating the destination buffer.
 - The encoder appends a single SLIP END byte at the end of the encoded packet.
 
 ## Basic usage (decoding)
@@ -55,8 +55,8 @@ Notes:
 Typical pattern for decoding safely:
 
 1. Receive a raw buffer from the transport (serial, socket, etc.). The buffer must contain at least one SLIP END byte for a full frame.
-2. Call `slip_decoded_length()` to determine how many decoded bytes will result (up to the first END).
-3. Allocate a buffer of that size and call `slip_decode_packet()`.
+2. Call `SLIPStream::decoded_length()` to determine how many decoded bytes will result (up to the first END).
+3. Allocate a buffer of that size and call `SLIPStream::decode_packet()`.
 
 Example:
 
@@ -66,15 +66,15 @@ Example:
 #include <cstdio>
 
 void decode_example(const uint8_t* rx, size_t rxlen) {
-	size_t decoded_needed = slip_decoded_length(rx, rxlen);
-	if (decoded_needed == SLIP_DECODE_ERROR) {
+	size_t decoded_needed = SLIPStream::decoded_length(rx, rxlen);
+	if (decoded_needed == SLIPStream::DECODE_ERROR) {
 		std::puts("decode length failed: malformed input or missing END");
 		return;
 	}
 
 	std::vector<uint8_t> out(decoded_needed);
-	size_t got = slip_decode_packet(rx, rxlen, out.data(), out.size());
-	if (got == SLIP_DECODE_ERROR) {
+	size_t got = SLIPStream::decode_packet(rx, rxlen, out.data(), out.size());
+	if (got == SLIPStream::DECODE_ERROR) {
 		std::puts("decode failed: output buffer too small or malformed input");
 		return;
 	}
@@ -84,13 +84,13 @@ void decode_example(const uint8_t* rx, size_t rxlen) {
 ```
 
 Notes:
-- `slip_decoded_length()` stops at the first SLIP END; if no END is present it returns `SLIP_DECODE_ERROR`.
-- `slip_decode_packet()` returns `SLIP_DECODE_ERROR` for malformed escape sequences or if the provided output buffer is too small.
+- `SLIPStream::decoded_length()` stops at the first SLIP END; if no END is present it returns `SLIPStream::DECODE_ERROR`.
+- `SLIPStream::decode_packet()` returns `SLIPStream::DECODE_ERROR` for malformed escape sequences or if the provided output buffer is too small.
 
 ## Error handling and defensive tips
 
-- Treat `SLIP_ENCODE_ERROR` and `SLIP_DECODE_ERROR` as fatal for the current operation and recover by discarding the partial buffer or requesting a retry.
-- When reading from a stream, accumulate bytes until you observe an END (0xC0) before attempting `slip_decoded_length()` and decode. That avoids repeatedly scanning incomplete frames.
+- Treat `SLIPStream::ENCODE_ERROR` and `SLIPStream::DECODE_ERROR` as fatal for the current operation and recover by discarding the partial buffer or requesting a retry.
+- When reading from a stream, accumulate bytes until you observe an END (0xC0) before attempting `SLIPStream::decoded_length()` and decode. That avoids repeatedly scanning incomplete frames.
 - Be careful about concurrent access: functions are buffer-based and reentrant as long as you don't share the same input/output buffers concurrently.
 
 ## Building & testing

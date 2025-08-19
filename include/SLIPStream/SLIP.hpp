@@ -11,8 +11,12 @@
 #pragma once
 #include <cstdint>
 
-// SLIP special character definitions
-inline constexpr uint8_t SLIP_END    = 0xC0; // SLIP end of packet character
-inline constexpr uint8_t SLIP_ESC    = 0xDB; // SLIP escape character
-inline constexpr uint8_t SLIP_ESCEND = 0xDC; // Escaped END data byte
-inline constexpr uint8_t SLIP_ESCESC = 0xDD; // Escaped ESC data byte
+namespace SLIPStream {
+
+// SLIP special character definitions (namespaced, without SLIP_ prefix)
+inline constexpr uint8_t END    = 0xC0; // End of packet character
+inline constexpr uint8_t ESC    = 0xDB; // Escape character
+inline constexpr uint8_t ESCEND = 0xDC; // Escaped END data byte
+inline constexpr uint8_t ESCESC = 0xDD; // Escaped ESC data byte
+
+} // namespace SLIPStream
