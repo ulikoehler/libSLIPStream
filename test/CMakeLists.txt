@@ -11,22 +11,14 @@ include_directories(${PROJECT_ROOT}/include)
 
 # Use system-installed GoogleTest (expect it to be available on the host)
 find_package(GTest REQUIRED)
-
-add_executable(test_slipbuffer
+add_executable(test_all
+    test_all_main.cpp
     test_slipbuffer.cpp
-    ${PROJECT_ROOT}/src/SLIPBuffer.cpp
-    ${PROJECT_ROOT}/src/SLIPStreamDecoder.cpp
-)
-target_include_directories(test_slipbuffer PRIVATE ${PROJECT_ROOT}/include)
-target_link_libraries(test_slipbuffer PRIVATE GTest::gtest_main)
-add_test(NAME SLIPBufferTests COMMAND test_slipbuffer)
-
-add_executable(test_slipencoder
     test_slipencoder.cpp
     ${PROJECT_ROOT}/src/SLIPBuffer.cpp
     ${PROJECT_ROOT}/src/SLIPStreamDecoder.cpp
     ${PROJECT_ROOT}/src/SLIPStreamEncoder.cpp
 )
-target_include_directories(test_slipencoder PRIVATE ${PROJECT_ROOT}/include)
-target_link_libraries(test_slipencoder PRIVATE GTest::gtest_main)
-add_test(NAME SLIPEncoderTests COMMAND test_slipencoder)
+target_include_directories(test_all PRIVATE ${PROJECT_ROOT}/include)
+target_link_libraries(test_all PRIVATE GTest::gtest pthread)
+add_test(NAME AllTests COMMAND test_all)

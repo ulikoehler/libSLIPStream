@@ -95,14 +95,35 @@ Notes:
 
 ## Building & testing
 
-This repository includes a small CMake test under `test/` to exercise the buffer helpers. From the project root:
+This repository includes a small CMake test under `test/` that now builds a single test executable named `test_all` which contains all unit tests.
+
+From the project root (out-of-source build recommended):
 
 ```sh
 mkdir -p build && cd build
 cmake ..
-cmake --build . --target test_slipbuffer
+cmake --build . --target test_all
+# Run the tests via CTest (this runs the test_all executable)
 ctest -V
 ```
+
+You can also run the test binary directly to list or execute GoogleTest cases and get more verbose output:
+
+```sh
+# list registered test suites/cases
+./test/test_all --gtest_list_tests
+# run the tests directly
+./test/test_all
+```
+
+If you prefer CTest to discover and report individual GoogleTest cases, enable GoogleTest discovery in `test/CMakeLists.txt` by adding the following (optional):
+
+```cmake
+include(GoogleTest)
+gtest_discover_tests(test_all)
+```
+
+If you'd like, I can enable `gtest_discover_tests(test_all)` in `test/CMakeLists.txt` so `ctest -V` lists each test case separately.
 
 Adjust the commands for your environment (toolchain, cross-compile, or embedded workflow).
 

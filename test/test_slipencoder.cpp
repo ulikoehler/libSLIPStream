@@ -113,7 +113,4 @@ TEST(SLIPEncoder, QueueCapacityAndFragmentation) {
     EXPECT_EQ(totalConsumed, sizeof(in));
 }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// main moved to test_all_main.cpp

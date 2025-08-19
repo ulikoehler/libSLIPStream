@@ -60,7 +60,4 @@ TEST(SLIPBufferDecode, OutputTooSmall) {
     EXPECT_EQ(too_small, SLIP_DECODE_ERROR);
 }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+// main moved to test_all_main.cpp
