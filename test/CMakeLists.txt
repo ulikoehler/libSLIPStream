@@ -15,9 +15,9 @@ add_executable(test_all
     test_all_main.cpp
     test_slipbuffer.cpp
     test_slipencoder.cpp
-    ${PROJECT_ROOT}/src/SLIPBuffer.cpp
-    ${PROJECT_ROOT}/src/SLIPStreamDecoder.cpp
-    ${PROJECT_ROOT}/src/SLIPStreamEncoder.cpp
+    ${PROJECT_ROOT}/src/Buffer.cpp
+    ${PROJECT_ROOT}/src/Decoder.cpp
+    ${PROJECT_ROOT}/src/Encoder.cpp
 )
 target_include_directories(test_all PRIVATE ${PROJECT_ROOT}/include)
 target_link_libraries(test_all PRIVATE GTest::gtest pthread)
