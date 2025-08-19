@@ -1,3 +1,48 @@
+# CMake build
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+/compile_commands.json
+
+# Test build
+/test/build/
+
+# General build artifacts
+*.o
+*.obj
+*.exe
+*.out
+*.elf
+*.bin
+*.hex
+*.map
+
+# ESP-IDF
+/build/
+sdkconfig
+sdkconfig.old
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+
+# PlatformIO
+.pio/
+.pioenvs/
+
+# Logs
+*.log
 # Prerequisites
 *.d
 
