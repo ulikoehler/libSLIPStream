@@ -460,6 +460,42 @@ class TestSerialConnectionMocked:
         assert conn.port == '/dev/ttyUSB0'
         assert conn.baudrate == 115200
     
+    def test_serial_connection_read_write_close(self):
+        """Read, write, and close a mocked serial connection."""
+        mock_serial_module = MagicMock()
+        mock_port = MagicMock()
+        mock_port.is_open = True
+        mock_port.read.return_value = b"serial_data"
+        mock_port.write.return_value = 7
+        mock_serial_module.Serial.return_value = mock_port
+
+        with patch('builtins.__import__') as mock_import:
+            def custom_import(name, *args, **kwargs):
+                if name == 'serial':
+                    return mock_serial_module
+                return __import__(name, *args, **kwargs)
+            mock_import.side_effect = custom_import
+
+            conn = SerialConnection('/dev/ttyUSB0', baudrate=9600)
+            assert conn.is_open() is True
+            assert conn.read(timeout=0.5) == b"serial_data"
+            assert conn.write(b"hello") == 7
+            conn.close()
+            assert conn.is_open() is False
+            assert conn.read() == b''
+
+    @patch('builtins.__import__')
+    def test_serial_connection_import_error(self, mock_import):
+        """SerialConnection raises clear error when pyserial is unavailable."""
+        def custom_import(name, *args, **kwargs):
+            if name == 'serial':
+                raise ImportError("No module named serial")
+            return __import__(name, *args, **kwargs)
+        mock_import.side_effect = custom_import
+
+        with pytest.raises(ImportError, match="pyserial is required"):
+            SerialConnection('/dev/ttyUSB0')
+
     def test_serial_connection_port_property(self):
         """Test SerialConnection port property."""
         # Just verify that we can create an instance with port parameter
@@ -509,6 +545,16 @@ class TestTCPConnection:
         assert written == 4
     
     @patch('slipstream.connections.socket')
+    def test_tcp_connection_write_closed(self, mock_socket_module):
+        """Write returns 0 when socket is closed."""
+        mock_socket = MagicMock()
+        mock_socket.send.side_effect = OSError("closed")
+        mock_socket_module.socket.return_value = mock_socket
+        
+        conn = TCPConnection('localhost', 5000)
+        assert conn.write(b"data") == 0
+    
+    @patch('slipstream.connections.socket')
     def test_tcp_connection_timeout(self, mock_socket_module):
         """Handle TCP timeout gracefully."""
         import socket as socket_module
@@ -524,6 +570,17 @@ class TestTCPConnection:
         
         # Should return empty bytes on timeout
         assert data == b""
+
+    @patch('slipstream.connections.socket')
+    def test_tcp_connection_close_and_read_closed(self, mock_socket_module):
+        """Close TCP connection and verify no further reads are allowed."""
+        mock_socket = MagicMock()
+        mock_socket_module.socket.return_value = mock_socket
+        
+        conn = TCPConnection('localhost', 5000)
+        conn.close()
+        assert conn.is_open() is False
+        assert conn.read() == b''
 
 
 class TestCreateConnection:
@@ -610,6 +667,69 @@ class TestFrameMonitor:
         
         stats = monitor.get_stats()
         assert stats['frames_received'] >= 1
+
+    def test_frame_monitor_crc_validation(self):
+        """FrameMonitor flags invalid CRC and stores last frame."""
+        mock_conn = MagicMock()
+        monitor = FrameMonitor(mock_conn, check_crc=True)
+        
+        payload = b"hello"
+        bad_crc_frame = append_crc32(payload)[:-4] + b"\xFF\xFF\xFF\xFF"
+        monitor.process_chunk(encode_packet(bad_crc_frame))
+        
+        assert monitor.get_last_frame() is not None
+        assert monitor.get_last_frame()['crc_valid'] is False
+        stats = monitor.get_stats()
+        assert stats['frames_with_bad_crc'] == 1
+        assert stats['frames_received'] == 1
+
+    def test_frame_monitor_duration_and_close(self):
+        """Monitor loops until duration expires and close is called."""
+        class FakeConnection:
+            def __init__(self):
+                self.calls = 0
+            def read(self, timeout=None):
+                self.calls += 1
+                return b''
+            def close(self):
+                self.closed = True
+        
+        conn = FakeConnection()
+        monitor = FrameMonitor(conn, check_crc=False)
+        monitor.monitor(duration=0.1)
+        assert conn.calls >= 1
+        monitor.close()
+        assert getattr(conn, 'closed', False) is True
+
+    def test_frame_monitor_exception_during_read(self):
+        """Monitor handles read exceptions gracefully."""
+        class BrokenConnection:
+            def read(self, timeout=None):
+                raise RuntimeError("boom")
+            def close(self):
+                self.closed = True
+        
+        conn = BrokenConnection()
+        monitor = FrameMonitor(conn, check_crc=False)
+        monitor.monitor(duration=0.1)
+        monitor.close()
+        assert getattr(conn, 'closed', False) is True
+
+    def test_print_stats_outputs_text(self):
+        """Printing stats produces readable output."""
+        mock_conn = MagicMock()
+        monitor = FrameMonitor(mock_conn, check_crc=False)
+        monitor.process_chunk(encode_packet(b"abc"))
+        captured = StringIO()
+        sys_stdout = sys.stdout
+        sys.stdout = captured
+        try:
+            monitor.print_stats()
+        finally:
+            sys.stdout = sys_stdout
+        out = captured.getvalue()
+        assert "Frames" in out
+        assert "SLIP FRAME STATISTICS" in out
 
 
 class TestHexlifyFrame:
