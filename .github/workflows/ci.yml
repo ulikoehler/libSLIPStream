@@ -58,7 +58,7 @@ jobs:
         cd test/build
         echo "=== GCDA files ==="
         find . -name '*.gcda' | sort
-        lcov --directory . --capture --output-file coverage.info --ignore-errors=empty
+        lcov --directory . --capture --output-file coverage.info --ignore-errors=empty,mismatch --rc geninfo_unexecuted_blocks=1
         lcov --remove coverage.info '*/tests/*' '/usr/*' --output-file coverage.info
         lcov --list coverage.info
     
