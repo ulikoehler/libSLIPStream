@@ -95,15 +95,17 @@ Notes:
 
 ## Building & testing
 
-This repository includes a small CMake test under `test/` that now builds a single test executable named `test_all` which contains all unit tests.
+This repository includes a standalone CMake test project under `test/` that builds a single test executable named `test_all` containing all unit tests.
 
-From the project root (out-of-source build recommended):
+The top-level `CMakeLists.txt` is an ESP-IDF component file and is not intended for standalone test builds. Use the `test/` directory for normal C++ test compilation.
+
+From the `test/` directory (out-of-source build recommended):
 
 ```sh
+cd test
 mkdir -p build && cd build
-cmake ..
-cmake --build . --target test_all
-# Run the tests via CTest (this runs the test_all executable)
+cmake -DENABLE_COVERAGE=ON ..
+cmake --build .
 ctest -V
 ```
 

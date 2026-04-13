@@ -39,20 +39,20 @@ jobs:
         fi
     
     - name: Create build directory
-      run: mkdir -p build
+      run: mkdir -p test/build
     
     - name: Configure CMake with coverage
-      run: cd build && cmake -DENABLE_COVERAGE=ON ..
+      run: cd test/build && cmake -DENABLE_COVERAGE=ON ..
     
     - name: Build C++ code
-      run: cd build && cmake --build .
+      run: cd test/build && cmake --build .
     
     - name: Run C++ tests
-      run: cd build && ctest -V
+      run: cd test/build && ctest -V
     
     - name: Generate coverage report (C++)
       run: |
-        cd build
+        cd test/build
         lcov --directory . --capture --output-file coverage.info
         lcov --remove coverage.info '*/tests/*' '/usr/*' --output-file coverage.info
         lcov --list coverage.info
@@ -60,7 +60,7 @@ jobs:
     - name: Upload C++ coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        files: ./build/coverage.info
+        files: ./test/build/coverage.info
         flags: cpp
         name: cpp-coverage
         fail_ci_if_error: true
