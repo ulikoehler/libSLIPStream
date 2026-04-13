@@ -23,9 +23,20 @@ jobs:
         sudo apt-get install -y \
           build-essential \
           cmake \
-          google-test \
-          gcov \
+          libgtest-dev \
           lcov
+        # On Ubuntu, libgtest-dev installs sources only; build and install the libraries.
+        if [ -d /usr/src/googletest ]; then
+          cd /usr/src/googletest
+          sudo cmake .
+          sudo make
+          sudo cp lib/*.a /usr/lib/ || true
+        elif [ -d /usr/src/gtest ]; then
+          cd /usr/src/gtest
+          sudo cmake .
+          sudo make
+          sudo cp lib/*.a /usr/lib/ || true
+        fi
     
     - name: Create build directory
       run: mkdir -p build
