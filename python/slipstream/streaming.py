@@ -8,7 +8,7 @@ import struct
 import time
 from typing import Optional, Callable, Dict, Any
 from .slip import StreamingDecoder
-from .crc import extract_crc32, verify_crc32, calculate_crc32
+from .crc import extract_crc32, verify_crc32, calculate_crc32, diagnose_crc_error
 from .stats import FrameStatistics
 from .connections import Connection
 
@@ -50,6 +50,9 @@ class FrameMonitor:
     def _handle_frame(self, frame_data: bytes) -> None:
         """Internal callback for decoded frames."""
         crc_valid = None
+        crc_received = None
+        crc_expected = None
+        crc_diagnostic = None
         payload = frame_data
         
         # Check CRC if enabled
@@ -57,8 +60,14 @@ class FrameMonitor:
             try:
                 payload, crc_bytes = extract_crc32(frame_data)
                 crc_valid = verify_crc32(payload, crc_bytes)
+                crc_received = int.from_bytes(crc_bytes, 'little')
+                crc_expected = calculate_crc32(payload)
+                if not crc_valid:
+                    diag = diagnose_crc_error(payload, crc_bytes)
+                    crc_diagnostic = diag.get('diagnosis')
             except (ValueError, struct.error):
                 crc_valid = False
+                crc_diagnostic = 'Frame too short or invalid CRC field'
         
         # Record statistics
         self.stats.add_frame(
@@ -71,6 +80,9 @@ class FrameMonitor:
             'raw': frame_data,
             'payload': payload,
             'crc_valid': crc_valid,
+            'crc_received': crc_received,
+            'crc_expected': crc_expected,
+            'crc_diagnostic': crc_diagnostic,
             'timestamp': time.time()
         }
         

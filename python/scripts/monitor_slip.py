@@ -79,6 +79,16 @@ class NonInteractiveMonitor:
         
         print(f"\n[Frame {self.frame_count}] {len(frame_data)} bytes{crc_status}")
         
+        if last['crc_valid'] is False:
+            received = last.get('crc_received')
+            expected = last.get('crc_expected')
+            diagnostic = last.get('crc_diagnostic')
+            if received is not None and expected is not None:
+                print(f"  CRC received = 0x{received:08X}")
+                print(f"  CRC expected = 0x{expected:08X}")
+            if diagnostic:
+                print(f"  CRC diagnosis = {diagnostic}")
+        
         if self.show_hex:
             hex_output = hexlify_frame(frame_data)
             print(hex_output)
@@ -217,15 +227,18 @@ class InteractiveMonitor:
                 break
             
             crc_indicator = ""
+            extra_crc = ""
             if frame['crc_valid'] is True:
                 crc_indicator = " [✓CRC]"
             elif frame['crc_valid'] is False:
                 crc_indicator = " [✗CRC]"
+                if frame.get('crc_received') is not None and frame.get('crc_expected') is not None:
+                    extra_crc = f" recv={frame['crc_received']:08X} exp={frame['crc_expected']:08X}"
             
             timestamp = time.strftime('%H:%M:%S', time.localtime(frame['timestamp']))
             frame_str = (
                 f"  {timestamp} | {len(frame['payload']):3d} payload bytes | "
-                f"HEX: {frame['raw'][:20].hex().upper()}...{crc_indicator}"
+                f"HEX: {frame['raw'][:20].hex().upper()}...{crc_indicator}{extra_crc}"
             )
             
             if frame['crc_valid'] is False:

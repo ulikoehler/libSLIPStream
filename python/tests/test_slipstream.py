@@ -314,6 +314,18 @@ class TestCRC32:
         corrupted_crc = b"\xFF\xFF\xFF\xFF"
         assert verify_crc32(extracted_payload, corrupted_crc) is False
     
+    def test_crc_error_diagnosis_missing_xor(self):
+        """Diagnose a CRC mismatch caused by a missing final XOR step."""
+        payload = b"payload_data"
+        expected = calculate_crc32(payload)
+        missing_xor = (~expected) & 0xFFFFFFFF
+        bad_crc_bytes = struct.pack('<I', missing_xor)
+
+        diagnosis = slipstream.crc.diagnose_crc_error(payload, bad_crc_bytes)
+        assert diagnosis['received'] == missing_xor
+        assert diagnosis['expected'] == expected
+        assert 'missing final XOR' in diagnosis['diagnosis']
+    
     def test_crc32_to_hex(self):
         """Convert CRC32 to hex string."""
         crc = 0x12345678

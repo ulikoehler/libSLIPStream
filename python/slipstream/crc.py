@@ -133,3 +133,40 @@ def hex_to_crc32(hex_str: str) -> int:
         CRC32 value as integer
     """
     return struct.unpack('<I', bytes.fromhex(hex_str))[0]
+
+
+def diagnose_crc_error(data: bytes, stored_crc: bytes) -> dict:
+    """Diagnose why a CRC32 validation failed."""
+    if len(stored_crc) != 4:
+        return {
+            'error': 'invalid_crc_length',
+            'received': None,
+            'expected': None,
+            'diagnosis': 'CRC field must be 4 bytes long'
+        }
+
+    expected = calculate_crc32(data)
+    received = struct.unpack('<I', stored_crc)[0]
+    expected_bytes = expected.to_bytes(4, 'little')
+    received_big_endian = int.from_bytes(expected_bytes[::-1], 'little')
+    expected_xor = (~expected) & 0xFFFFFFFF
+    expected_xor_be = int.from_bytes(expected_xor.to_bytes(4, 'little')[::-1], 'little')
+
+    diagnostics = []
+    if received == expected_xor:
+        diagnostics.append('missing final XOR (0xFFFFFFFF)')
+    if received == received_big_endian:
+        diagnostics.append('CRC bytes appear swapped (endianness mismatch)')
+    if received == expected_xor_be:
+        diagnostics.append('CRC bytes swapped and final XOR missing')
+    if not diagnostics:
+        diagnostics.append('CRC mismatch')
+
+    return {
+        'received': received,
+        'expected': expected,
+        'expected_xor': expected_xor,
+        'received_big_endian': received_big_endian,
+        'expected_xor_be': expected_xor_be,
+        'diagnosis': '; '.join(diagnostics)
+    }
