@@ -131,3 +131,207 @@ Adjust the commands for your environment (toolchain, cross-compile, or embedded 
 
 See `LICENSE` for license information.
 
+## Python Library
+
+This repository also includes a comprehensive Python library and monitoring tool for SLIP frame handling.
+
+### Installation
+
+```bash
+# Install from the python directory
+cd python
+pip install -e .
+
+# Or install dependencies manually
+pip install pyserial  # For serial port support
+```
+
+### Python Quick Start
+
+#### Basic Encoding and Decoding
+
+```python
+from slipstream import encode_packet, decode_packet
+
+# Encode data
+data = b"Hello, World!"
+encoded = encode_packet(data)
+print(f"Encoded: {encoded.hex()}")
+
+# Decode data
+decoded, consumed = decode_packet(encoded)
+print(f"Decoded: {decoded}")
+```
+
+#### Streaming Frame Monitoring (Serial Port)
+
+The most common use case - continuously monitor SLIP frames from a serial port:
+
+```python
+from slipstream import create_connection, FrameMonitor
+
+# Create connection (auto-detects serial or TCP)
+connection = create_connection('/dev/ttyUSB0:115200')
+
+# Create monitor with CRC32 validation
+monitor = FrameMonitor(connection, check_crc=True, hex_output=False)
+
+# Define callback for each frame
+def process_frame(frame_data):
+    print(f"Received {len(frame_data)} bytes: {frame_data.hex()}")
+    # Extract and verify CRC if enabled
+    last = monitor.get_last_frame()
+    if last['crc_valid'] is False:
+        print("Warning: CRC validation failed!")
+
+monitor.frame_callback = process_frame
+
+# Monitor for 30 seconds
+monitor.monitor(duration=30)
+
+# Print statistics
+monitor.print_stats()
+monitor.close()
+```
+
+#### Interactive Monitoring with ncurses UI
+
+For real-time monitoring with a full-screen statistics dashboard:
+
+```bash
+# Monitor serial port with ncurses UI (interactive mode)
+python3 -m slipstream.scripts.monitor_slip -i /dev/ttyUSB0
+
+# Monitor TCP connection
+python3 -m slipstream.scripts.monitor_slip -i tcp:192.168.1.100:5000
+
+# Monitor with hex display and 60-second timeout
+python3 -m slipstream.scripts.monitor_slip -x -t 60 /dev/ttyUSB0:115200
+```
+
+Or run the monitoring script directly:
+
+```bash
+./python/scripts/monitor_slip.py -i /dev/ttyUSB0
+```
+
+**Interactive Mode Controls:**
+- **q** - Quit the application
+- **h** - Toggle hex display
+- **c** - Clear frame history
+- **Any key** - Trigger UI refresh
+
+### Command-Line Tool Features
+
+```bash
+# Basic monitoring
+./python/scripts/monitor_slip.py /dev/ttyUSB0
+
+# With custom baudrate
+./python/scripts/monitor_slip.py /dev/ttyUSB0:115200
+
+# TCP connection
+./python/scripts/monitor_slip.py tcp:192.168.1.1:5000
+
+# Interactive ncurses UI
+./python/scripts/monitor_slip.py -i /dev/ttyUSB0
+
+# Hex dump of frames
+./python/scripts/monitor_slip.py -x /dev/ttyUSB0
+
+# 30-second timeout
+./python/scripts/monitor_slip.py -t 30 /dev/ttyUSB0
+
+# ASCII display
+./python/scripts/monitor_slip.py -a /dev/ttyUSB0
+
+# Skip CRC validation
+./python/scripts/monitor_slip.py --no-crc /dev/ttyUSB0
+```
+
+### CRC32 Validation
+
+The library supports CRC32 with the Ethernet polynomial (0x04C11DB7). CRC is typically stored in the last 4 bytes of the frame payload:
+
+```python
+from slipstream import calculate_crc32, append_crc32, extract_crc32, verify_crc32
+
+# Calculate CRC32
+payload = b"application_data"
+crc = calculate_crc32(payload)
+print(f"CRC32: 0x{crc:08X}")
+
+# Append CRC32 to payload (little-endian)
+frame_with_crc = append_crc32(payload)
+
+# Extract and verify CRC from received frame
+received_frame = b"application_data\x12\x34\x56\x78"
+payload, crc_bytes = extract_crc32(received_frame)
+is_valid = verify_crc32(payload, crc_bytes)
+print(f"CRC Valid: {is_valid}")
+```
+
+### Statistics and Diagnostics
+
+The monitoring tool automatically tracks:
+- **Frames received** - Total count of successfully decoded frames
+- **Frames with bad CRC** - Count of CRC validation failures
+- **Frames with errors** - Count of frames with decoding errors
+- **Total bytes received** - Raw bytes from the connection
+- **Payload bytes** - Decoded payload bytes
+- **Frames per second** - Throughput metric
+- **Bytes per second** - Raw throughput metric
+- **Frame size statistics** - Min/max/average frame sizes
+
+Access statistics programmatically:
+
+```python
+stats = monitor.get_stats()
+print(f"Frames received: {stats['frames_received']}")
+print(f"Frames with errors: {stats['frames_with_errors']}")
+print(f"Throughput: {stats['bytes_per_second']:.2f} bps")
+print(f"Average frame size: {stats['avg_payload_size']:.1f} bytes")
+```
+
+### SLIP Frame Format
+
+For detailed information about the SLIP frame structure and CRC32 encoding, see [FramingConvention.md](FramingConvention.md).
+
+Key points:
+- **Frame structure:** `[END byte] [payload with SLIP escaping] [END byte]`
+- **Escape sequences:**
+  - 0xC0 (END) inside payload → 0xDB, 0xDC
+  - 0xDB (ESC) inside payload → 0xDB, 0xDD
+- **CRC32:** Ethernet polynomial, stored in last 4 bytes of payload (little-endian)
+
+### API Reference
+
+#### Core Functions
+
+- `encode_packet(data: bytes) -> bytes` - SLIP encode data
+- `decode_packet(data: bytes) -> (bytes, int)` - SLIP decode, returns (payload, consumed_bytes)
+- `StreamingDecoder` - Stateful decoder for continuous streams
+- `calculate_crc32(data: bytes) -> int` - Calculate CRC32
+- `verify_crc32(data: bytes, stored_crc: bytes) -> bool` - Verify CRC
+
+#### Connection Classes
+
+- `SerialConnection(port, baudrate, timeout)` - Serial port handler
+- `TCPConnection(host, port, timeout)` - TCP socket handler
+- `create_connection(string) -> Connection` - Factory function
+
+#### High-Level Classes
+
+- `FrameMonitor` - High-level frame monitor with CRC and stats
+- `FrameStatistics` - Statistics tracker
+
+### Requirements
+
+- Python 3.6+
+- `pyserial` (optional, for serial port support)
+- `curses` (built-in on Linux/macOS; optional for interactive mode)
+
+### License
+
+The Python library is part of libSLIPStream and is subject to the same license terms. See `LICENSE`.
+
