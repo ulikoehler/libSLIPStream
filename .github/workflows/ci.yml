@@ -48,12 +48,17 @@ jobs:
       run: cd test/build && cmake --build .
     
     - name: Run C++ tests
-      run: cd test/build && ctest -V
+      run: |
+        cd test/build
+        ctest -V
+        ./test_all
     
     - name: Generate coverage report (C++)
       run: |
         cd test/build
-        lcov --directory . --capture --output-file coverage.info
+        echo "=== GCDA files ==="
+        find . -name '*.gcda' | sort
+        lcov --directory . --capture --output-file coverage.info --ignore-errors=empty
         lcov --remove coverage.info '*/tests/*' '/usr/*' --output-file coverage.info
         lcov --list coverage.info
     
