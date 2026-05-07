@@ -15,6 +15,12 @@ A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame en
 
 ## Installation
 
+### From Git
+
+```bash
+pip install git+https://github.com/ulikoehler/libSLIPStream.git#subdirectory=python
+```
+
 ### From Source
 
 ```bash

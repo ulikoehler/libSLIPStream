@@ -140,7 +140,10 @@ This repository also includes a comprehensive Python library and monitoring tool
 ### Installation
 
 ```bash
-# Install from the python directory
+# Install from git repository
+pip install git+https://github.com/ulikoehler/libSLIPStream.git#subdirectory=python
+
+# Or install from the python directory
 cd python
 pip install -e .
 
