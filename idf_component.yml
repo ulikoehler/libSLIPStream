@@ -1,5 +1,5 @@
 version: "1.0.0"
-url: "https://github.com/ulikoehler/libSLIPSstream"
+url: "https://github.com/ulikoehler/libSLIPStream"
 license: "Apache-2.0"
 
 ## IDF Component Manager Manifest File
