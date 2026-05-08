@@ -735,50 +735,75 @@ For more benchmark options, see Google Benchmark documentation or run:
 Benchmark results from AMD Ryzen 9 7950X3D 16-Core Processor, Linux 6.8.0-106-generic, Ubuntu 24.04:
 
 ```
+Run on (32 X 5759 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x16)
+  L1 Instruction 32 KiB (x16)
+  L2 Unified 1024 KiB (x16)
+  L3 Unified 98304 KiB (x2)
+Load Average: 6.01, 4.61, 9.11
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+***WARNING*** Library was built as DEBUG. Timings may be affected.
+-------------------------------------------------------------------------------------------------
 Benchmark                                       Time             CPU   Iterations UserCounters...
 -------------------------------------------------------------------------------------------------
-BM_Buffer_EncodedLength_Small                5.69 ns         5.69 ns    119060637 bytes_per_second=2.62097Gi/s
-BM_Buffer_EncodedLength_Medium               84.5 ns         84.5 ns      8313243 bytes_per_second=2.82081Gi/s
-BM_Buffer_EncodedLength_Large                 424 ns          424 ns      1665703 bytes_per_second=2.24944Gi/s
-BM_Buffer_Encode_Small                       7.28 ns         7.28 ns     96095747 bytes_per_second=2.04728Gi/s
-BM_Buffer_Encode_Medium                       110 ns          110 ns      6470204 bytes_per_second=2.17142Gi/s
-BM_Buffer_Encode_Large                        423 ns          423 ns      1661689 bytes_per_second=2.25532Gi/s
-BM_Buffer_Encode_WithSpecialBytes             131 ns          131 ns      5328903 bytes_per_second=1.81814Gi/s
-BM_Buffer_Decode_Small                       7.84 ns         7.84 ns     89415458 bytes_per_second=1.90046Gi/s
-BM_Buffer_Decode_Medium                       109 ns          109 ns      6465651 bytes_per_second=2.19274Gi/s
-BM_Buffer_Decode_Large                        421 ns          421 ns      1671146 bytes_per_second=2.26688Gi/s
-BM_Buffer_Decode_WithSpecialBytes             176 ns          176 ns      3976291 bytes_per_second=1.35201Gi/s
-BM_Buffer_Roundtrip_Small                    14.4 ns         14.4 ns     48850354 bytes_per_second=1.03349Gi/s
-BM_Buffer_Roundtrip_Medium                    215 ns          215 ns      3303080 bytes_per_second=1.11121Gi/s
-BM_Buffer_Roundtrip_Large                     842 ns          842 ns       814488 bytes_per_second=1.13224Gi/s
-BM_Encoder_PushPacket_Small                  57.2 ns         57.2 ns     12290136 bytes_per_second=266.868Mi/s
-BM_Encoder_PushPacket_Medium                  745 ns          745 ns       944644 bytes_per_second=327.538Mi/s
-BM_Encoder_PushPacket_Large                  2958 ns         2957 ns       238001 bytes_per_second=330.254Mi/s
-BM_Encoder_PushPacket_WithSpecialBytes       2077 ns         2076 ns       337352 bytes_per_second=117.577Mi/s
-BM_Encoder_Flush                             57.3 ns         57.3 ns     12219550 bytes_per_second=266.393Mi/s
-BM_Encoder_MultiplePackets                   1041 ns         1041 ns       667080 bytes_per_second=293.281Mi/s
-BM_Decoder_Consume_Small                     35.6 ns         35.6 ns     27015629 bytes_per_second=428.906Mi/s
-BM_Decoder_Consume_Medium                     228 ns          228 ns      3053442 bytes_per_second=1.04574Gi/s
-BM_Decoder_Consume_Large                      856 ns          856 ns       825243 bytes_per_second=1.11368Gi/s
-BM_Decoder_Consume_WithSpecialBytes           461 ns          461 ns      1560501 bytes_per_second=529.638Mi/s
-BM_Decoder_Consume_MultiplePackets            404 ns          404 ns      1710928 bytes_per_second=754.94Mi/s
-BM_Decoder_Reset                             33.4 ns         33.4 ns     20475418 bytes_per_second=457.34Mi/s
-BM_CRC32_Calculate_Small                     14.5 ns         14.5 ns     45484019 bytes_per_second=1.02415Gi/s
-BM_CRC32_Calculate_Medium                     445 ns          445 ns      1566405 bytes_per_second=548.854Mi/s
-BM_CRC32_Calculate_Large                     1837 ns         1837 ns       378422 bytes_per_second=531.528Mi/s
-BM_CRC32_Calculate_VeryLarge                14829 ns        14825 ns        47462 bytes_per_second=526.988Mi/s
-BM_CRC32_Append_Small                        16.5 ns         16.5 ns     42686782 bytes_per_second=924.432Mi/s
-BM_CRC32_Append_Medium                        447 ns          447 ns      1567342 bytes_per_second=546.346Mi/s
-BM_CRC32_Append_Large                        1849 ns         1849 ns       376519 bytes_per_second=528.088Mi/s
-BM_CRC32_Verify_Small                        16.3 ns         16.3 ns     43229016 bytes_per_second=938.668Mi/s
-BM_CRC32_Verify_Medium                        448 ns          448 ns      1561968 bytes_per_second=545.223Mi/s
-BM_CRC32_Verify_Large                        1826 ns         1826 ns       382229 bytes_per_second=534.696Mi/s
-BM_CRC32_Extract_Small                       1.21 ns         1.21 ns    583332410 bytes_per_second=12.3456Gi/s
-BM_CRC32_Extract_Medium                      1.20 ns         1.20 ns    583280255 bytes_per_second=198.77Gi/s
-BM_CRC32_Extract_Large                       1.01 ns         1.01 ns    651876046 bytes_per_second=939.825Gi/s
-BM_CRC32_Roundtrip_Small                     34.8 ns         34.8 ns     20072957 bytes_per_second=438.079Mi/s
-BM_CRC32_Roundtrip_Medium                     891 ns          891 ns       778304 bytes_per_second=274.063Mi/s
-BM_CRC32_Roundtrip_Large                     3667 ns         3667 ns       190517 bytes_per_second=266.343Mi/s
+BM_Buffer_EncodedLength_Small                5.92 ns         5.92 ns    112619909 bytes_per_second=2.51659Gi/s
+BM_Buffer_EncodedLength_Medium               85.5 ns         85.5 ns      8311018 bytes_per_second=2.78937Gi/s
+BM_Buffer_EncodedLength_Large                 319 ns          319 ns      2089336 bytes_per_second=2.99166Gi/s
+BM_Buffer_Encode_Small                       8.40 ns         8.39 ns     83212517 bytes_per_second=1.77516Gi/s
+BM_Buffer_Encode_Medium                       110 ns          110 ns      6394295 bytes_per_second=2.17157Gi/s
+BM_Buffer_Encode_Large                        422 ns          422 ns      1666835 bytes_per_second=2.26111Gi/s
+BM_Buffer_Encode_WithSpecialBytes             133 ns          133 ns      5283615 bytes_per_second=1.79578Gi/s
+BM_Buffer_Encode_ASCII_Small                 8.29 ns         8.29 ns     82098556 bytes_per_second=1.79747Gi/s
+BM_Buffer_Encode_ASCII_Medium                 109 ns          109 ns      6448603 bytes_per_second=2.18429Gi/s
+BM_Buffer_Encode_ASCII_Large                  417 ns          417 ns      1678069 bytes_per_second=2.28499Gi/s
+BM_Buffer_Decode_Small                       8.39 ns         8.39 ns     83137422 bytes_per_second=1.77676Gi/s
+BM_Buffer_Decode_Medium                       134 ns          134 ns      5737978 bytes_per_second=1.78007Gi/s
+BM_Buffer_Decode_Large                        522 ns          522 ns      1347194 bytes_per_second=1.82802Gi/s
+BM_Buffer_Decode_WithSpecialBytes             174 ns          174 ns      4000138 bytes_per_second=1.36692Gi/s
+BM_Buffer_Decode_ASCII_Small                 8.28 ns         8.28 ns     85161734 bytes_per_second=1.80038Gi/s
+BM_Buffer_Decode_ASCII_Medium                 133 ns          133 ns      6061027 bytes_per_second=1.78928Gi/s
+BM_Buffer_Decode_ASCII_Large                  507 ns          507 ns      1346242 bytes_per_second=1.88131Gi/s
+BM_Buffer_Roundtrip_Small                    16.6 ns         16.6 ns     42455372 bytes_per_second=921.394Mi/s
+BM_Buffer_Roundtrip_Medium                    225 ns          225 ns      3268368 bytes_per_second=1.0606Gi/s
+BM_Buffer_Roundtrip_Large                     932 ns          931 ns       749064 bytes_per_second=1.02381Gi/s
+BM_Buffer_Roundtrip_ASCII_Small              16.4 ns         16.4 ns     42211330 bytes_per_second=929.267Mi/s
+BM_Buffer_Roundtrip_ASCII_Medium              215 ns          215 ns      3294096 bytes_per_second=1.10688Gi/s
+BM_Buffer_Roundtrip_ASCII_Large               834 ns          834 ns       837302 bytes_per_second=1.14381Gi/s
+BM_Encoder_PushPacket_Small                  56.5 ns         56.5 ns     12251054 bytes_per_second=270.083Mi/s
+BM_Encoder_PushPacket_Medium                  740 ns          740 ns       956275 bytes_per_second=329.817Mi/s
+BM_Encoder_PushPacket_Large                  2914 ns         2914 ns       238158 bytes_per_second=335.107Mi/s
+BM_Encoder_PushPacket_WithSpecialBytes       2065 ns         2065 ns       338523 bytes_per_second=118.251Mi/s
+BM_Encoder_PushPacket_ASCII_Small            56.4 ns         56.4 ns     12394255 bytes_per_second=270.483Mi/s
+BM_Encoder_PushPacket_ASCII_Medium            734 ns          734 ns       952648 bytes_per_second=332.655Mi/s
+BM_Encoder_PushPacket_ASCII_Large            2916 ns         2916 ns       226315 bytes_per_second=334.874Mi/s
+BM_Encoder_Flush                             57.0 ns         57.0 ns     12340812 bytes_per_second=267.572Mi/s
+BM_Encoder_MultiplePackets                   1026 ns         1026 ns       681138 bytes_per_second=297.35Mi/s
+BM_Decoder_Consume_Small                     24.5 ns         24.5 ns     28446694 bytes_per_second=623.67Mi/s
+BM_Decoder_Consume_Medium                     223 ns          223 ns      3123641 bytes_per_second=1.06905Gi/s
+BM_Decoder_Consume_Large                      842 ns          842 ns       834388 bytes_per_second=1.1329Gi/s
+BM_Decoder_Consume_WithSpecialBytes           456 ns          456 ns      1533738 bytes_per_second=535.669Mi/s
+BM_Decoder_Consume_MultiplePackets            392 ns          392 ns      1777866 bytes_per_second=778.35Mi/s
+BM_Decoder_Reset                             32.1 ns         32.1 ns     21402350 bytes_per_second=474.826Mi/s
+BM_Decoder_Consume_SingleByte                 430 ns          430 ns      1619666 bytes_per_second=568.417Mi/s
+BM_Decoder_Consume_4ByteChunk                 266 ns          266 ns      2655141 bytes_per_second=919.084Mi/s
+BM_Decoder_Consume_AllAtOnce                  228 ns          228 ns      3009612 bytes_per_second=1.04752Gi/s
+BM_CRC32_Calculate_Small                     16.7 ns         16.7 ns     33608889 bytes_per_second=915.968Mi/s
+BM_CRC32_Calculate_Medium                     444 ns          444 ns      1528396 bytes_per_second=549.324Mi/s
+BM_CRC32_Calculate_Large                     1834 ns         1834 ns       383570 bytes_per_second=532.546Mi/s
+BM_CRC32_Calculate_VeryLarge                14799 ns        14798 ns        47604 bytes_per_second=527.946Mi/s
+BM_CRC32_Append_Small                        16.5 ns         16.5 ns     42598182 bytes_per_second=923.2Mi/s
+BM_CRC32_Append_Medium                        445 ns          445 ns      1579699 bytes_per_second=548.589Mi/s
+BM_CRC32_Append_Large                        1839 ns         1839 ns       381032 bytes_per_second=530.986Mi/s
+BM_CRC32_Verify_Small                        16.7 ns         16.7 ns     42170662 bytes_per_second=914.184Mi/s
+BM_CRC32_Verify_Medium                        445 ns          445 ns      1570909 bytes_per_second=548.095Mi/s
+BM_CRC32_Verify_Large                        1821 ns         1821 ns       385081 bytes_per_second=536.306Mi/s
+BM_CRC32_Extract_Small                       1.20 ns         1.20 ns    586457795 bytes_per_second=12.4647Gi/s
+BM_CRC32_Extract_Medium                      1.19 ns         1.19 ns    584822677 bytes_per_second=200.084Gi/s
+BM_CRC32_Extract_Large                       1.20 ns         1.20 ns    586421276 bytes_per_second=797.018Gi/s
+BM_CRC32_Roundtrip_Small                     33.3 ns         33.3 ns     21031787 bytes_per_second=458.201Mi/s
+BM_CRC32_Roundtrip_Medium                     888 ns          888 ns       790292 bytes_per_second=274.792Mi/s
+BM_CRC32_Roundtrip_Large                     3665 ns         3664 ns       191573 bytes_per_second=266.556Mi/s
 ```
 
 *Note: Benchmarks were built with `-O3 -march=native` optimizations. Results will vary based on CPU architecture, compiler version, and system configuration.*
