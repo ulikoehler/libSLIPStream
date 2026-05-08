@@ -39,6 +39,7 @@ __pycache__/
 *.pyc
 venv/
 env/
+*.egg-info/
 
 # PlatformIO
 .pio/
