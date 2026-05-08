@@ -13,17 +13,13 @@
 #include <cstddef>
 #include <functional>
 #include "SLIPStream/SLIP.hpp"
+#include "SLIPStream/Error.hpp"
 
 namespace SLIPStream {
 
-// Error constants for encode/decode operations
+// Error constants for encode/decode operations (legacy, for backward compatibility)
 inline constexpr size_t ENCODE_ERROR = SIZE_MAX;
 inline constexpr size_t DECODE_ERROR = SIZE_MAX;
-
-enum class LogType: uint8_t {
-	Unknown = 0,
-	RXBufferOverflow = 1
-};
 
 /**
  * Determine the packet length when sending the given buffer [in] using SLIP.
@@ -32,6 +28,12 @@ enum class LogType: uint8_t {
  * @return The number of bytes a SLIP encoded version of [in] would consume
  */
 size_t encoded_length(const uint8_t* in, size_t inlen);
+
+/**
+ * Enhanced version of encoded_length with detailed error reporting
+ * @return Result<size_t> containing the encoded length or error information
+ */
+Result<size_t> encoded_length_ex(const uint8_t* in, size_t inlen);
 
 /**
  * Encode given input data using SLIP, saving it into the given output buffer.
@@ -46,6 +48,12 @@ size_t encoded_length(const uint8_t* in, size_t inlen);
 size_t encode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen);
 
 /**
+ * Enhanced version of encode_packet with detailed error reporting
+ * @return Result<size_t> containing the number of bytes written or error information
+ */
+Result<size_t> encode_packet_ex(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen);
+
+/**
  * Determine the decoded packet length when receiving a SLIP-encoded buffer [in].
  * Decoding will stop at the first END byte (0xC0). Escapes are resolved
  * (ESC, ESCEND) -> END and (ESC, ESCESC) -> ESC.
@@ -58,6 +66,12 @@ size_t encode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outle
  * @return The number of decoded bytes up to the first END, or DECODE_ERROR on error.
  */
 size_t decoded_length(const uint8_t* in, size_t inlen);
+
+/**
+ * Enhanced version of decoded_length with detailed error reporting
+ * @return Result<size_t> containing the decoded length or error information with position
+ */
+Result<size_t> decoded_length_ex(const uint8_t* in, size_t inlen);
 
 /**
  * Decode a SLIP-encoded buffer [in] into the provided output buffer [out].
@@ -75,5 +89,11 @@ size_t decoded_length(const uint8_t* in, size_t inlen);
  * @return The number of bytes written to [out], or DECODE_ERROR on error.
  */
 size_t decode_packet(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen);
+
+/**
+ * Enhanced version of decode_packet with detailed error reporting
+ * @return Result<size_t> containing the number of bytes written or error information with position
+ */
+Result<size_t> decode_packet_ex(const uint8_t* in, size_t inlen, uint8_t* out, size_t outlen);
 
 } // namespace SLIPStream

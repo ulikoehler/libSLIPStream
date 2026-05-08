@@ -1,4 +1,5 @@
 #include "SLIPStream/Encoder.hpp"
+#include "SLIPStream/Error.hpp"
 
 namespace SLIPStream {
 
@@ -40,6 +41,27 @@ WriteStatus Encoder::flush() {
         }
     }
     return WriteStatus::Ok;
+}
+
+WriteResult Encoder::flush_ex() {
+    size_t sent = 0;
+    while (txSize > 0 && sent < maxSendChunk) {
+        uint8_t b;
+        // Peek without removing
+        b = txBuf[txHead];
+        WriteStatus st = outputFn(b);
+        if (st == WriteStatus::Ok) {
+            // Actually remove
+            (void)dequeueByte(b);
+            sent++;
+            continue;
+        } else if (st == WriteStatus::RetryLater) {
+            return WriteResult(WriteStatus::RetryLater);
+        } else {
+            return WriteResult(ErrorCode::EncodeInternalError, sent, "Output function returned error");
+        }
+    }
+    return WriteResult(WriteStatus::Ok);
 }
 
 WriteStatus Encoder::ensureFree(size_t n) {
@@ -120,6 +142,65 @@ std::pair<WriteStatus, size_t> Encoder::pushPacket(const uint8_t* data, size_t s
     st = flush();
     if (st != WriteStatus::Ok) return {st, consumed};
     return {WriteStatus::Ok, consumed};
+}
+
+Encoder::PushPacketResult Encoder::pushPacket_ex(const uint8_t* data, size_t size) {
+    size_t consumed = 0;
+    // First, try to send any already queued bytes for fairness
+    WriteResult wr = flush_ex();
+    if (wr.is_error()) return PushPacketResult(wr.error.code, consumed, consumed, wr.error.message);
+    if (wr.is_retry()) return PushPacketResult(WriteStatus::RetryLater, consumed);
+
+    // If we were in the middle of final END from previous call, attempt it
+    if (endPending) {
+        // Ensure space then queue END
+        WriteStatus st = ensureFree(1);
+        if (st != WriteStatus::Ok) {
+            if (st == WriteStatus::RetryLater) {
+                return PushPacketResult(WriteStatus::RetryLater, consumed);
+            }
+            return PushPacketResult(ErrorCode::EncodeInternalError, consumed, consumed, "Failed to ensure free space for pending END");
+        }
+        queueByte(END);
+        endPending = false;
+        // Try to send a bit immediately to reduce latency
+        wr = flush_ex();
+        if (wr.is_error()) return PushPacketResult(wr.error.code, consumed, consumed, wr.error.message);
+        if (wr.is_retry()) return PushPacketResult(WriteStatus::RetryLater, consumed);
+    }
+
+    // Encode payload bytes
+    while (consumed < size) {
+        size_t c = 0;
+        WriteStatus st = encodeOne(data + consumed, size - consumed, c);
+        if (st != WriteStatus::Ok) {
+            if (st == WriteStatus::RetryLater) {
+                return PushPacketResult(WriteStatus::RetryLater, consumed);
+            }
+            return PushPacketResult(ErrorCode::EncodeInternalError, consumed, consumed, "Failed to encode byte");
+        }
+        consumed += c;
+        // Opportunistic small flush to respect maxSendChunk pacing
+        wr = flush_ex();
+        if (wr.is_error()) return PushPacketResult(wr.error.code, consumed, consumed, wr.error.message);
+        if (wr.is_retry()) return PushPacketResult(WriteStatus::RetryLater, consumed);
+    }
+
+    // Append END terminator for the packet
+    WriteStatus st = ensureFree(1);
+    if (st != WriteStatus::Ok) {
+        if (st == WriteStatus::RetryLater) {
+            endPending = true; // Remember to append END on next call
+        }
+        return PushPacketResult(WriteStatus::RetryLater, consumed);
+    }
+    queueByte(END);
+
+    // Final flush attempt
+    wr = flush_ex();
+    if (wr.is_error()) return PushPacketResult(wr.error.code, consumed, consumed, wr.error.message);
+    if (wr.is_retry()) return PushPacketResult(WriteStatus::RetryLater, consumed);
+    return PushPacketResult(WriteStatus::Ok, consumed);
 }
 
 } // namespace SLIPStream

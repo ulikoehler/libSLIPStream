@@ -12,6 +12,7 @@
 #include <functional>
 #include <vector>
 #include "SLIPStream/SLIP.hpp"
+#include "SLIPStream/Error.hpp"
 
 namespace SLIPStream {
 
@@ -22,6 +23,22 @@ enum class WriteStatus: uint8_t {
     Ok = 0,       // Byte accepted and written
     RetryLater = 1, // Output would block; try again later without data loss
     Error = 2     // Non-recoverable error from output
+};
+
+/**
+ * Enhanced write status with error information
+ */
+struct WriteResult {
+    WriteStatus status;
+    ErrorInfo error;
+    
+    WriteResult(WriteStatus s) : status(s), error(ErrorCode::Success) {}
+    WriteResult(ErrorCode code, size_t pos = 0, const char* msg = "")
+        : status(WriteStatus::Error), error(code, pos, msg) {}
+    
+    bool is_success() const { return status == WriteStatus::Ok; }
+    bool is_retry() const { return status == WriteStatus::RetryLater; }
+    bool is_error() const { return status == WriteStatus::Error; }
 };
 
 using OutputFn = std::function<WriteStatus(uint8_t)>;
@@ -35,10 +52,29 @@ public:
 
     // Attempt to flush up to maxSendChunk queued encoded bytes via outputFn.
     WriteStatus flush();
+    
+    // Enhanced flush with error information
+    WriteResult flush_ex();
 
     // Encode and queue a complete SLIP packet (payload escaped, END appended).
     // Returns pair of (status, consumedBytes).
     std::pair<WriteStatus, size_t> pushPacket(const uint8_t* data, size_t size);
+    
+    // Enhanced pushPacket with detailed error information
+    struct PushPacketResult {
+        WriteStatus status;
+        size_t consumed;
+        ErrorInfo error;
+        
+        PushPacketResult(WriteStatus s, size_t c) : status(s), consumed(c), error(ErrorCode::Success) {}
+        PushPacketResult(ErrorCode code, size_t c, size_t pos = 0, const char* msg = "")
+            : status(WriteStatus::Error), consumed(c), error(code, pos, msg) {}
+        
+        bool is_success() const { return status == WriteStatus::Ok; }
+        bool is_retry() const { return status == WriteStatus::RetryLater; }
+        bool is_error() const { return status == WriteStatus::Error; }
+    };
+    PushPacketResult pushPacket_ex(const uint8_t* data, size_t size);
 
     void setMaxSendChunk(size_t n) { maxSendChunk = n; }
 
