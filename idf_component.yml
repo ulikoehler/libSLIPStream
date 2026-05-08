@@ -1,3 +1,7 @@
+version: "1.0.0"
+url: "https://github.com/ulikoehler/libSLIPSstream"
+license: "Apache-2.0"
+
 ## IDF Component Manager Manifest File
 dependencies:
   ## Required IDF version
