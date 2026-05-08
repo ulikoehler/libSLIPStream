@@ -2,7 +2,7 @@
 
 ## Overview
 
-SLIP (Serial Line Internet Protocol) is a simple protocol for framing messages over serial connections. This document describes the SLIP frame format as implemented in libSLIPStream, with particular emphasis on CRC32 validation.
+SLIP (Serial Line Internet Protocol) is a simple protocol for framing messages over serial connections. This document describes the SLIP frame format as implemented in libSLIPspeed, with particular emphasis on CRC32 validation.
 
 **Reference:** RFC 1055 - Nonstandard Transmission of IP Datagrams over Serial Lines: SLIP
 
@@ -36,7 +36,7 @@ When decoding, the reverse process occurs:
 
 ## Frame Structure with CRC32
 
-The libSLIPStream library supports optional CRC32 validation. When CRC checking is enabled, the frame structure is:
+The libSLIPspeed library supports optional CRC32 validation. When CRC checking is enabled, the frame structure is:
 
 ```
 [END] [PAYLOAD_DATA] [CRC32] [END]
@@ -174,7 +174,7 @@ crc_valid = verify_crc32(payload, crc_bytes)
 
 ## C++ Implementation
 
-The C++ `libSLIPStream` library provides buffer-based utilities for SLIP encoding/decoding. CRC32 validation is left to the application layer.
+The C++ `libSLIPspeed` library provides buffer-based utilities for SLIP encoding/decoding. CRC32 validation is left to the application layer.
 
 ```cpp
 #include "SLIPStream/Buffer.hpp"
@@ -238,6 +238,6 @@ size_t got = SLIPStream::decode_packet(buffer, written, decoded, decoded_len);
 
 ## See Also
 
-- [libSLIPStream C++ Library](../README.md)
+- [libSLIPspeed C++ Library](../README.md)
 - [Python slipstream Package](../python/README.md)
 - [RFC 1055](https://tools.ietf.org/html/rfc1055)

@@ -1,12 +1,12 @@
 {
-    "name": "libSLIPStream",
+    "name": "libSLIPspeed",
     "version": "1.0.0",
     "description": "SLIP (Serial Line Internet Protocol) implementation for embedded systems.",
     "keywords": "SLIP, serial, protocol, embedded",
     "repository":
     {
       "type": "git",
-      "url": "https://github.com/ulikoehler/libSLIPStream.git"
+      "url": "https://github.com/ulikoehler/libSLIPspeed.git"
     },
     "authors":
     [
@@ -18,7 +18,7 @@
       }
     ],
     "license": "Apache-2.0",
-    "homepage": "https://github.com/ulikoehler/libSLIPStream",
+    "homepage": "https://github.com/ulikoehler/libSLIPspeed",
     "dependencies": {},
     "frameworks": ["arduino", "espidf"],
     "platforms": "*",

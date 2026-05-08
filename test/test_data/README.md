@@ -48,7 +48,7 @@ A frame containing all special SLIP bytes.
 
 ## Usage Examples
 
-### C++ (libSLIPStream)
+### C++ (libSLIPspeed)
 ```cpp
 #include <fstream>
 #include <vector>

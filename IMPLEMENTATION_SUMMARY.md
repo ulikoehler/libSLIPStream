@@ -2,7 +2,7 @@
 
 ## Overview
 
-A comprehensive production-ready Python library and monitoring tool has been added to libSLIPStream, providing everything needed for monitoring SLIP frames on serial ports or TCP connections with CRC32 validation, real-time statistics, and an interactive ncurses UI.
+A comprehensive production-ready Python library and monitoring tool has been added to libSLIPspeed, providing everything needed for monitoring SLIP frames on serial ports or TCP connections with CRC32 validation, real-time statistics, and an interactive ncurses UI.
 
 ## What's New
 
@@ -254,7 +254,7 @@ python3 04_serial_monitor_demo.py --help
 ## Project Structure
 
 ```
-libSLIPStream/
+libSLIPspeed/
 ├── python/                          # NEW: Python library
 │   ├── slipstream/                  # Core library package
 │   │   ├── __init__.py

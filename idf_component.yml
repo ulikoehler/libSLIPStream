@@ -1,5 +1,5 @@
-version: "1.0.0"
-url: "https://github.com/ulikoehler/libSLIPStream"
+version: "1.0.1"
+url: "https://github.com/ulikoehler/libSLIPspeed"
 description: "Lightweight & fast SLIP encoder/decoder library for embedded and server platforms."
 license: "Apache-2.0"
 

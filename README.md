@@ -1,6 +1,6 @@
-# libSLIPStream
+# libSLIPspeed
 
-![libSLIPStream logo](docs/logo.png)
+![libSLIPspeed logo](docs/logo.png)
 
 SLIP encoder & decoder  suitable for platforms from embedded systems to servers.
 
@@ -814,14 +814,14 @@ See `LICENSE` for license information.
 
 ## Python Binding
 
-The official Python binding for libSLIPStream is now available as a separate project: **[slipspeed](https://github.com/ulikoehler/PySLIPStream)**.
+The official Python binding for libSLIPspeed is now available as a separate project: **[slipspeed](https://github.com/ulikoehler/PySLIPStream)**.
 
 slipspeed provides:
-- Full parity with libSLIPStream for SLIP encoding/decoding
+- Full parity with libSLIPspeed for SLIP encoding/decoding
 - Identical CRC32 implementation (Ethernet polynomial)
 - Serial and TCP connection support
 - Interactive monitoring tools with ncurses UI
-- Automated parity testing against libSLIPStream
+- Automated parity testing against libSLIPspeed
 
 ### Installation
 
