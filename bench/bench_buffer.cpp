@@ -157,6 +157,141 @@ static void BM_Buffer_Decode_WithSpecialBytes(benchmark::State& state) {
     state.SetBytesProcessed(state.iterations() * data.size());
 }
 
+static void BM_Buffer_Encode_ASCII_Small(benchmark::State& state) {
+    std::vector<uint8_t> data(16);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> out(32);
+    for (auto _ : state) {
+        SLIPStream::encode_packet(data.data(), data.size(), out.data(), out.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Encode_ASCII_Medium(benchmark::State& state) {
+    std::vector<uint8_t> data(256);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> out(512);
+    for (auto _ : state) {
+        SLIPStream::encode_packet(data.data(), data.size(), out.data(), out.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Encode_ASCII_Large(benchmark::State& state) {
+    std::vector<uint8_t> data(1024);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> out(2048);
+    for (auto _ : state) {
+        SLIPStream::encode_packet(data.data(), data.size(), out.data(), out.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Decode_ASCII_Small(benchmark::State& state) {
+    std::vector<uint8_t> data(16);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> encoded(32);
+    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    std::vector<uint8_t> out(16);
+    
+    for (auto _ : state) {
+        SLIPStream::decode_packet(encoded.data(), encoded_len, out.data(), out.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Decode_ASCII_Medium(benchmark::State& state) {
+    std::vector<uint8_t> data(256);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> encoded(512);
+    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    std::vector<uint8_t> out(256);
+    
+    for (auto _ : state) {
+        SLIPStream::decode_packet(encoded.data(), encoded_len, out.data(), out.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Decode_ASCII_Large(benchmark::State& state) {
+    std::vector<uint8_t> data(1024);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> encoded(2048);
+    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    std::vector<uint8_t> out(1024);
+    
+    for (auto _ : state) {
+        SLIPStream::decode_packet(encoded.data(), encoded_len, out.data(), out.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Roundtrip_ASCII_Small(benchmark::State& state) {
+    std::vector<uint8_t> data(16);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> encoded(32);
+    std::vector<uint8_t> decoded(16);
+    
+    for (auto _ : state) {
+        size_t enc_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+        SLIPStream::decode_packet(encoded.data(), enc_len, decoded.data(), decoded.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Roundtrip_ASCII_Medium(benchmark::State& state) {
+    std::vector<uint8_t> data(256);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> encoded(512);
+    std::vector<uint8_t> decoded(256);
+    
+    for (auto _ : state) {
+        size_t enc_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+        SLIPStream::decode_packet(encoded.data(), enc_len, decoded.data(), decoded.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Buffer_Roundtrip_ASCII_Large(benchmark::State& state) {
+    std::vector<uint8_t> data(1024);
+    // Fill with printable ASCII characters (0x20-0x7E)
+    for (size_t i = 0; i < data.size(); i++) {
+        data[i] = 0x20 + (i % (0x7E - 0x20 + 1));
+    }
+    std::vector<uint8_t> encoded(2048);
+    std::vector<uint8_t> decoded(1024);
+    
+    for (auto _ : state) {
+        size_t enc_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+        SLIPStream::decode_packet(encoded.data(), enc_len, decoded.data(), decoded.size());
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
 BENCHMARK(BM_Buffer_EncodedLength_Small);
 BENCHMARK(BM_Buffer_EncodedLength_Medium);
 BENCHMARK(BM_Buffer_EncodedLength_Large);
@@ -165,12 +300,21 @@ BENCHMARK(BM_Buffer_Encode_Small);
 BENCHMARK(BM_Buffer_Encode_Medium);
 BENCHMARK(BM_Buffer_Encode_Large);
 BENCHMARK(BM_Buffer_Encode_WithSpecialBytes);
+BENCHMARK(BM_Buffer_Encode_ASCII_Small);
+BENCHMARK(BM_Buffer_Encode_ASCII_Medium);
+BENCHMARK(BM_Buffer_Encode_ASCII_Large);
 
 BENCHMARK(BM_Buffer_Decode_Small);
 BENCHMARK(BM_Buffer_Decode_Medium);
 BENCHMARK(BM_Buffer_Decode_Large);
 BENCHMARK(BM_Buffer_Decode_WithSpecialBytes);
+BENCHMARK(BM_Buffer_Decode_ASCII_Small);
+BENCHMARK(BM_Buffer_Decode_ASCII_Medium);
+BENCHMARK(BM_Buffer_Decode_ASCII_Large);
 
 BENCHMARK(BM_Buffer_Roundtrip_Small);
 BENCHMARK(BM_Buffer_Roundtrip_Medium);
 BENCHMARK(BM_Buffer_Roundtrip_Large);
+BENCHMARK(BM_Buffer_Roundtrip_ASCII_Small);
+BENCHMARK(BM_Buffer_Roundtrip_ASCII_Medium);
+BENCHMARK(BM_Buffer_Roundtrip_ASCII_Large);
