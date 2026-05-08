@@ -28,15 +28,17 @@ cd python
 pip install -e .
 ```
 
-### With Dependencies
+### With Optional Dependencies
 
 ```bash
 # For serial port support
-pip install pyserial
+pip install -e ".[serial]"
 
-# Already included (standard library)
-# curses - for interactive mode (built-in on Linux/macOS)
+# For development/testing
+pip install -e ".[dev]"
 ```
+
+Core functionality requires only Python 3.6+. The curses module for interactive mode is included in the standard library on Linux/macOS.
 
 ## Quick Start
 

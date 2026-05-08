@@ -1,8 +1,6 @@
-# Optional dependencies for slipstream
-# Core functionality requires only Python 3.6+
-
-# For serial port support (recommended)
-pyserial>=3.5
+# Development dependencies for slipstream
+# Install with: pip install -e ".[dev]"
+# For serial port support: pip install -e ".[serial]"
 
 # For development/testing
 pytest>=6.0
