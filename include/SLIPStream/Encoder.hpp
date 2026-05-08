@@ -60,6 +60,10 @@ public:
     // Returns pair of (status, consumedBytes).
     std::pair<WriteStatus, size_t> pushPacket(const uint8_t* data, size_t size);
     
+    // Encode and queue a complete SLIP packet with chunk-based processing
+    // Processes data in chunks of specified size for better performance
+    std::pair<WriteStatus, size_t> pushPacket_chunk(const uint8_t* data, size_t size, size_t chunk_size);
+    
     // Enhanced pushPacket with detailed error information
     struct PushPacketResult {
         WriteStatus status;
@@ -75,6 +79,9 @@ public:
         bool is_error() const { return status == WriteStatus::Error; }
     };
     PushPacketResult pushPacket_ex(const uint8_t* data, size_t size);
+    
+    // Enhanced chunk-based pushPacket with detailed error information
+    PushPacketResult pushPacket_chunk_ex(const uint8_t* data, size_t size, size_t chunk_size);
 
     void setMaxSendChunk(size_t n) { maxSendChunk = n; }
 

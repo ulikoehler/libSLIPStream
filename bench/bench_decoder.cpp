@@ -169,3 +169,79 @@ BENCHMARK(BM_Decoder_Consume_Large);
 BENCHMARK(BM_Decoder_Consume_WithSpecialBytes);
 BENCHMARK(BM_Decoder_Consume_MultiplePackets);
 BENCHMARK(BM_Decoder_Reset);
+
+// Chunk-based consumption benchmarks
+static void BM_Decoder_Consume_SingleByte(benchmark::State& state) {
+    std::vector<uint8_t> rx_buffer(2048);
+    std::vector<uint8_t> data(256);
+    std::vector<uint8_t> encoded(512);
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
+    
+    std::vector<std::vector<uint8_t>> received_messages;
+    auto message_callback = [&received_messages](uint8_t* data, size_t size) {
+        received_messages.emplace_back(data, data + size);
+    };
+    
+    std::function<void(SLIPStream::LogType, const char*)> log_callback = nullptr;
+    
+    SLIPStream::Decoder decoder(rx_buffer.data(), rx_buffer.size(), message_callback, log_callback);
+    
+    for (auto _ : state) {
+        for (size_t i = 0; i < encoded_len; i++) {
+            decoder.consume(encoded[i]);
+        }
+        received_messages.clear();
+        decoder.reset();
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Decoder_Consume_4ByteChunk(benchmark::State& state) {
+    std::vector<uint8_t> rx_buffer(2048);
+    std::vector<uint8_t> data(256);
+    std::vector<uint8_t> encoded(512);
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
+    
+    std::vector<std::vector<uint8_t>> received_messages;
+    auto message_callback = [&received_messages](uint8_t* data, size_t size) {
+        received_messages.emplace_back(data, data + size);
+    };
+    
+    std::function<void(SLIPStream::LogType, const char*)> log_callback = nullptr;
+    
+    SLIPStream::Decoder decoder(rx_buffer.data(), rx_buffer.size(), message_callback, log_callback);
+    
+    for (auto _ : state) {
+        decoder.consume_chunk(encoded.data(), encoded_len, 4);
+        received_messages.clear();
+        decoder.reset();
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+static void BM_Decoder_Consume_AllAtOnce(benchmark::State& state) {
+    std::vector<uint8_t> rx_buffer(2048);
+    std::vector<uint8_t> data(256);
+    std::vector<uint8_t> encoded(512);
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
+    
+    std::vector<std::vector<uint8_t>> received_messages;
+    auto message_callback = [&received_messages](uint8_t* data, size_t size) {
+        received_messages.emplace_back(data, data + size);
+    };
+    
+    std::function<void(SLIPStream::LogType, const char*)> log_callback = nullptr;
+    
+    SLIPStream::Decoder decoder(rx_buffer.data(), rx_buffer.size(), message_callback, log_callback);
+    
+    for (auto _ : state) {
+        decoder.consume(encoded.data(), encoded_len);
+        received_messages.clear();
+        decoder.reset();
+    }
+    state.SetBytesProcessed(state.iterations() * data.size());
+}
+
+BENCHMARK(BM_Decoder_Consume_SingleByte);
+BENCHMARK(BM_Decoder_Consume_4ByteChunk);
+BENCHMARK(BM_Decoder_Consume_AllAtOnce);

@@ -203,4 +203,33 @@ Encoder::PushPacketResult Encoder::pushPacket_ex(const uint8_t* data, size_t siz
     return PushPacketResult(WriteStatus::Ok, consumed);
 }
 
+std::pair<WriteStatus, size_t> Encoder::pushPacket_chunk(const uint8_t* data, size_t size, size_t chunk_size) {
+    size_t consumed = 0;
+    while (consumed < size) {
+        size_t to_process = std::min(chunk_size, size - consumed);
+        auto [status, c] = pushPacket(data + consumed, to_process);
+        if (status != WriteStatus::Ok) {
+            return {status, consumed};
+        }
+        consumed += c;
+    }
+    return {WriteStatus::Ok, consumed};
+}
+
+Encoder::PushPacketResult Encoder::pushPacket_chunk_ex(const uint8_t* data, size_t size, size_t chunk_size) {
+    size_t consumed = 0;
+    while (consumed < size) {
+        size_t to_process = std::min(chunk_size, size - consumed);
+        PushPacketResult result = pushPacket_ex(data + consumed, to_process);
+        if (result.is_retry()) {
+            return PushPacketResult(WriteStatus::RetryLater, consumed);
+        }
+        if (result.is_error()) {
+            return PushPacketResult(result.error.code, consumed, consumed, result.error.message);
+        }
+        consumed += result.consumed;
+    }
+    return PushPacketResult(WriteStatus::Ok, consumed);
+}
+
 } // namespace SLIPStream

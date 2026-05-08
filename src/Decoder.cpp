@@ -21,6 +21,16 @@ void Decoder::consume(const uint8_t* data, size_t size) {
     
 }
 
+size_t Decoder::consume_chunk(const uint8_t* data, size_t size, size_t chunk_size) {
+    size_t consumed = 0;
+    while (consumed < size) {
+        size_t to_consume = std::min(chunk_size, size - consumed);
+        consume(data + consumed, to_consume);
+        consumed += to_consume;
+    }
+    return consumed;
+}
+
 Decoder::ConsumeResult Decoder::consume_ex(const uint8_t* data, size_t size) {
     size_t consumed = 0;
     for (size_t i = 0; i < size; i++)
@@ -119,6 +129,19 @@ Decoder::ConsumeResult Decoder::consume_ex(uint8_t c) {
     }
     consumedCount++;
     return ConsumeResult(1);
+}
+
+Decoder::ConsumeResult Decoder::consume_chunk_ex(const uint8_t* data, size_t size, size_t chunk_size) {
+    size_t consumed = 0;
+    while (consumed < size) {
+        size_t to_consume = std::min(chunk_size, size - consumed);
+        ConsumeResult result = consume_ex(data + consumed, to_consume);
+        if (result.has_error) {
+            return ConsumeResult(result.error.code, consumed, result.error.position, result.error.message);
+        }
+        consumed += result.consumed;
+    }
+    return ConsumeResult(consumed);
 }
 
 void Decoder::reset() {

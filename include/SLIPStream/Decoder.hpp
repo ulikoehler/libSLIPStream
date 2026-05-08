@@ -45,6 +45,10 @@ public:
     void consume(const uint8_t* data, size_t size);
     void consume(uint8_t byte);
     
+    // Consume multiple bytes at once with specified chunk size
+    // Returns number of bytes consumed
+    size_t consume_chunk(const uint8_t* data, size_t size, size_t chunk_size);
+    
     // Enhanced consume with error reporting
     struct ConsumeResult {
         size_t consumed;
@@ -57,6 +61,9 @@ public:
     };
     ConsumeResult consume_ex(const uint8_t* data, size_t size);
     ConsumeResult consume_ex(uint8_t byte);
+    
+    // Enhanced chunk consume with error reporting
+    ConsumeResult consume_chunk_ex(const uint8_t* data, size_t size, size_t chunk_size);
 
     // Clear RX buf etc
     void reset();
