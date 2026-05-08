@@ -1,6 +1,7 @@
 // CRC32 benchmarks
 #include <benchmark/benchmark.h>
 #include <vector>
+#include <cstring>
 #include "SLIPStream/CRC32.hpp"
 
 static void BM_CRC32_Calculate_Small(benchmark::State& state) {

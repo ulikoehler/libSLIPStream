@@ -1,13 +1,35 @@
 // Decoder benchmarks
 #include <benchmark/benchmark.h>
 #include <vector>
+#include <cstring>
 #include "SLIPStream/Decoder.hpp"
+#include "SLIPStream/Encoder.hpp"
+
+// Helper function to encode a packet using the Encoder class
+static size_t encode_packet_helper(const uint8_t* data, size_t size, uint8_t* output, size_t output_size) {
+    std::vector<uint8_t> encoded_data;
+    auto output_fn = [&encoded_data](uint8_t byte) -> SLIPStream::WriteStatus {
+        encoded_data.push_back(byte);
+        return SLIPStream::WriteStatus::Ok;
+    };
+    
+    SLIPStream::Encoder encoder(output_fn, output_size);
+    auto [status, consumed] = encoder.pushPacket(data, size);
+    encoder.flush();
+    
+    if (encoded_data.size() > output_size) {
+        return 0;
+    }
+    
+    memcpy(output, encoded_data.data(), encoded_data.size());
+    return encoded_data.size();
+}
 
 static void BM_Decoder_Consume_Small(benchmark::State& state) {
     std::vector<uint8_t> rx_buffer(512);
     std::vector<uint8_t> data(16);
     std::vector<uint8_t> encoded(32);
-    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
     
     std::vector<std::vector<uint8_t>> received_messages;
     auto message_callback = [&received_messages](uint8_t* data, size_t size) {
@@ -29,7 +51,7 @@ static void BM_Decoder_Consume_Medium(benchmark::State& state) {
     std::vector<uint8_t> rx_buffer(1024);
     std::vector<uint8_t> data(256);
     std::vector<uint8_t> encoded(512);
-    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
     
     std::vector<std::vector<uint8_t>> received_messages;
     auto message_callback = [&received_messages](uint8_t* data, size_t size) {
@@ -51,7 +73,7 @@ static void BM_Decoder_Consume_Large(benchmark::State& state) {
     std::vector<uint8_t> rx_buffer(2048);
     std::vector<uint8_t> data(1024);
     std::vector<uint8_t> encoded(2048);
-    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
     
     std::vector<std::vector<uint8_t>> received_messages;
     auto message_callback = [&received_messages](uint8_t* data, size_t size) {
@@ -77,7 +99,7 @@ static void BM_Decoder_Consume_WithSpecialBytes(benchmark::State& state) {
         data[i] = (i % 2 == 0) ? 0xC0 : 0xDB;
     }
     std::vector<uint8_t> encoded(1024);
-    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
     
     std::vector<std::vector<uint8_t>> received_messages;
     auto message_callback = [&received_messages](uint8_t* data, size_t size) {
@@ -99,7 +121,7 @@ static void BM_Decoder_Consume_MultiplePackets(benchmark::State& state) {
     std::vector<uint8_t> rx_buffer(4096);
     std::vector<uint8_t> data(32);
     std::vector<uint8_t> encoded(64);
-    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
     
     std::vector<std::vector<uint8_t>> received_messages;
     auto message_callback = [&received_messages](uint8_t* data, size_t size) {
@@ -123,7 +145,7 @@ static void BM_Decoder_Reset(benchmark::State& state) {
     std::vector<uint8_t> rx_buffer(512);
     std::vector<uint8_t> data(16);
     std::vector<uint8_t> encoded(32);
-    size_t encoded_len = SLIPStream::encode_packet(data.data(), data.size(), encoded.data(), encoded.size());
+    size_t encoded_len = encode_packet_helper(data.data(), data.size(), encoded.data(), encoded.size());
     
     std::vector<std::vector<uint8_t>> received_messages;
     auto message_callback = [&received_messages](uint8_t* data, size_t size) {
