@@ -30,6 +30,7 @@ add_executable(test_all
     test_decoder_enhanced.cpp
     test_edge_cases.cpp
     test_crc32.cpp
+    test_data_files.cpp
     ${PROJECT_ROOT}/src/Buffer.cpp
     ${PROJECT_ROOT}/src/Decoder.cpp
     ${PROJECT_ROOT}/src/Encoder.cpp
@@ -37,6 +38,7 @@ add_executable(test_all
     ${PROJECT_ROOT}/src/CRC32.cpp
 )
 target_include_directories(test_all PRIVATE ${PROJECT_ROOT}/include)
+target_compile_definitions(test_all PRIVATE PROJECT_ROOT="${PROJECT_ROOT}")
 target_link_libraries(test_all PRIVATE GTest::gtest pthread)
 
 # Link coverage library if coverage is enabled
