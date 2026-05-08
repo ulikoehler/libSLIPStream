@@ -61,6 +61,8 @@ jobs:
         lcov --directory . --capture --output-file coverage.info --ignore-errors=empty,mismatch,unused --rc geninfo_unexecuted_blocks=1
         lcov --remove coverage.info '*/test/*' '/usr/*' --output-file coverage.info --ignore-errors=unused
         lcov --list coverage.info
+        # Generate HTML report
+        genhtml coverage.info --output-directory coverage-html
     
     - name: Upload C++ coverage to Codecov
       uses: codecov/codecov-action@v5
@@ -70,6 +72,20 @@ jobs:
         flags: cpp
         name: cpp-coverage
         fail_ci_if_error: true
+    
+    - name: Upload C++ coverage report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cpp-coverage-report
+        path: test/build/coverage-html/
+        retention-days: 30
+    
+    - name: Upload C++ coverage info as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cpp-coverage-info
+        path: test/build/coverage.info
+        retention-days: 30
 
   python-tests:
     name: Python Tests with Coverage
@@ -118,6 +134,13 @@ jobs:
         flags: python
         name: python-${{ matrix.python-version }}-coverage
         fail_ci_if_error: true
+    
+    - name: Upload Python coverage report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-${{ matrix.python-version }}-coverage-report
+        path: python/htmlcov/
+        retention-days: 30
 
   coverage-check:
     name: Coverage Threshold Check
