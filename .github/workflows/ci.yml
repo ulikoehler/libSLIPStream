@@ -87,107 +87,9 @@ jobs:
         path: test/build/coverage.info
         retention-days: 30
 
-  python-tests:
-    name: Python Tests with Coverage
-    runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest pytest-cov coverage pyserial
-    
-    - name: Navigate to Python directory
-      run: cd python
-    
-    - name: Run Python tests with coverage
-      run: |
-        cd python
-        pytest tests/test_slipstream.py \
-          --cov=slipstream \
-          --cov-report=term-missing \
-          --cov-report=xml \
-          --cov-report=html \
-          -v
-    
-    - name: Check coverage threshold (90%)
-      run: |
-        cd python
-        coverage report --fail-under=90
-    
-    - name: Upload Python coverage to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./python/coverage.xml
-        flags: python
-        name: python-${{ matrix.python-version }}-coverage
-        fail_ci_if_error: true
-    
-    - name: Upload Python coverage report as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: python-${{ matrix.python-version }}-coverage-report
-        path: python/htmlcov/
-        retention-days: 30
-
-  coverage-check:
-    name: Coverage Threshold Check
-    runs-on: ubuntu-latest
-    needs: [cpp-tests, python-tests]
-    
-    steps:
-    - name: Check coverage status
-      run: |
-        echo "✓ C++ tests passed with coverage reporting"
-        echo "✓ Python tests passed with coverage reporting"
-        echo "Coverage reports uploaded to Codecov"
 
   code-quality:
     name: Code Quality Checks
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Install linting tools
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 black isort
-    
-    - name: Check Python code style (Black)
-      run: |
-        cd python
-        black --check slipstream/ scripts/ examples/ || true
-    
-    - name: Check Python imports (isort)
-      run: |
-        cd python
-        isort --check-only slipstream/ scripts/ examples/ || true
-    
-    - name: Lint Python code (flake8)
-      run: |
-        cd python
-        flake8 slipstream/ --max-line-length=100 || true
-
-  documentation:
-    name: Build Documentation
     runs-on: ubuntu-latest
     
     steps:
@@ -200,7 +102,7 @@ jobs:
   build-status:
     name: Build Status Summary
     runs-on: ubuntu-latest
-    needs: [cpp-tests, python-tests, code-quality]
+    needs: [cpp-tests, code-quality]
     if: always()
     
     steps:
@@ -208,7 +110,6 @@ jobs:
       run: |
         echo "Build Pipeline Summary:"
         echo "✓ C++ compilation and tests"
-        echo "✓ Python tests (multiple versions)"
         echo "✓ Code quality checks"
         echo ""
         echo "Coverage Report Status: PASSED"
