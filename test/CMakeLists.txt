@@ -24,9 +24,17 @@ add_executable(test_all
     test_slipbuffer.cpp
     test_slipencoder.cpp
     test_comprehensive.cpp
+    test_error_system.cpp
+    test_buffer_enhanced.cpp
+    test_encoder_enhanced.cpp
+    test_decoder_enhanced.cpp
+    test_edge_cases.cpp
+    test_crc32.cpp
     ${PROJECT_ROOT}/src/Buffer.cpp
     ${PROJECT_ROOT}/src/Decoder.cpp
     ${PROJECT_ROOT}/src/Encoder.cpp
+    ${PROJECT_ROOT}/src/Error.cpp
+    ${PROJECT_ROOT}/src/CRC32.cpp
 )
 target_include_directories(test_all PRIVATE ${PROJECT_ROOT}/include)
 target_link_libraries(test_all PRIVATE GTest::gtest pthread)
