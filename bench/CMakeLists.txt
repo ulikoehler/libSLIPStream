@@ -41,10 +41,8 @@ if(GTest_FOUND)
     target_link_libraries(bench_all PRIVATE GTest::gtest)
 endif()
 
-# Enable link-time optimization for better benchmark accuracy
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_options(bench_all PRIVATE -O3 -march=native)
-endif()
+# Enable optimization for better benchmark accuracy
+target_compile_options(bench_all PRIVATE -O3 -march=native)
 
 # Add custom target to run benchmarks
 add_custom_target(run_bench
