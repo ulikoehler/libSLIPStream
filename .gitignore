@@ -9,6 +9,9 @@
 # Test build
 /test/build/
 
+# Benchmark build
+/bench/build/
+
 # General build artifacts
 *.o
 *.obj
