@@ -1,5 +1,6 @@
 version: "1.0.0"
 url: "https://github.com/ulikoehler/libSLIPStream"
+description: "Lightweight & fast SLIP encoder/decoder library for embedded and server platforms."
 license: "Apache-2.0"
 
 ## IDF Component Manager Manifest File
