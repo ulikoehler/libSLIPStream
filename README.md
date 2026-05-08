@@ -1,6 +1,6 @@
 # libSLIPStream
 
-![libSLIPStream logo](docs/SLIPstream-logo.png)
+![libSLIPStream logo](docs/logo.png)
 
 SLIP encoder & decoder  suitable for platforms from embedded systems to servers.
 
