@@ -697,7 +697,7 @@ From the `bench/` directory:
 ```sh
 cd bench
 mkdir -p build && cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 ```
 
