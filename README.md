@@ -2,9 +2,9 @@
 
 ![libSLIPStream logo](docs/SLIPstream-logo.png)
 
-SLIP encoder & decoder focused on embedded systems, in C++.
+SLIP encoder & decoder  suitable for platforms from embedded systems to servers.
 
-This small, unopinionated library provides buffer-based helpers to encode and decode data using the SLIP (Serial Line Internet Protocol) framing. It is designed to be lightweight and safe for constrained environments: callers provide input/output buffers and the library returns explicit error codes when buffers are too small or input is malformed.
+This small, unopinionated library provides buffer- and stream-based helpers to encode and decode data using the SLIP (Serial Line Internet Protocol) framing with or without CRC. It is designed to be lightweight and safe for constrained environments: callers provide input/output buffers and the library returns explicit error codes when buffers are too small or input is malformed.
 
 **Note:** For a compatible Rust implementation, see [SLIPSpeed](https://github.com/ulikoehler/slipspeed).
 
