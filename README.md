@@ -814,9 +814,9 @@ See `LICENSE` for license information.
 
 ## Python Binding
 
-The official Python binding for libSLIPStream is now available as a separate project: **[PySLIPStream](https://github.com/ulikoehler/PySLIPStream)**.
+The official Python binding for libSLIPStream is now available as a separate project: **[slipspeed](https://github.com/ulikoehler/PySLIPStream)**.
 
-PySLIPStream provides:
+slipspeed provides:
 - Full parity with libSLIPStream for SLIP encoding/decoding
 - Identical CRC32 implementation (Ethernet polynomial)
 - Serial and TCP connection support
@@ -826,7 +826,7 @@ PySLIPStream provides:
 ### Installation
 
 ```bash
-pip install pyslipstream
+pip install slipspeed
 ```
 
 Or from source:
@@ -837,7 +837,7 @@ pip install git+https://github.com/ulikoehler/PySLIPStream.git
 ### Quick Example
 
 ```python
-from slipstream import encode_packet, decode_packet
+from slipspeed import encode_packet, decode_packet
 
 # Encode data
 data = b"Hello, World!"
@@ -847,5 +847,5 @@ encoded = encode_packet(data)
 decoded, consumed = decode_packet(encoded)
 ```
 
-For full documentation and examples, visit [PySLIPStream](https://github.com/ulikoehler/PySLIPStream).
+For full documentation and examples, visit [slipspeed](https://github.com/ulikoehler/PySLIPStream).
 
