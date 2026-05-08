@@ -1,0 +1,11 @@
+python/
+idf_component.yml
+CMakeLists.txt
+build/
+.pio/
+.pioenvs/
+test/
+FramingConvention.md
+IMPLEMENTATION_SUMMARY.md
+PYTHON_QUICKSTART.md
+*.tar.gz

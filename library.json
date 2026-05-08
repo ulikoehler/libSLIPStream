@@ -21,5 +21,32 @@
     "homepage": "https://github.com/ulikoehler/libSLIPStream",
     "dependencies": {},
     "frameworks": ["arduino", "espidf"],
-    "platforms": "*"
+    "platforms": "*",
+    "export": {
+        "include": [
+            "include",
+            "src",
+            "examples",
+            "library.json",
+            "LICENSE",
+            "README.md",
+            "platformio.ini"
+        ],
+        "exclude": [
+            "python",
+            "idf_component.yml",
+            "CMakeLists.txt",
+            "test",
+            "build",
+            ".pio",
+            ".pioenvs",
+            ".github",
+            ".gitignore",
+            ".pioignore",
+            "*.tar.gz",
+            "FramingConvention.md",
+            "IMPLEMENTATION_SUMMARY.md",
+            "PYTHON_QUICKSTART.md"
+        ]
+    }
 }

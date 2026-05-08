@@ -84,3 +84,9 @@ env/
 
 # debug information files
 *.dwo
+
+# PlatformIO build files
+*.tar.gz
+
+# ESP-IDF build files
+dist
